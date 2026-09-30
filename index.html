@@ -1,0 +1,1098 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Goose Lake: ten goose breeds on a sunlit farm lake, each carrying sourced research about Angels Knoll, Bunker Hill Parcel Y-1 in Los Angeles.">
+<style>[hidden]{display:none!important}</style>
+<title>Goose Lake Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a full-screen sunlit farm lake; HUD panels in the project's drawing-set style float over it. */
+  :root{
+    --paper:#ECEAE0; --paper-2:#E2DFD1; --ink:#1F2421; --ink-soft:#4B5049; --line:#C9C4B4;
+    --political:#3457A6; --financial:#B8792F; --cultural:#3F6B4F; --history:#7A6A52; --record:#2F3A45; --flag:#A33B2B;
+    --egg:#C98A3B;
+    --serif:"Source Serif 4",Georgia,serif; --sans:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+    --shadow:0 6px 24px rgba(31,36,33,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1B1D18; --paper-2:#23261F; --ink:#E9E6DA; --ink-soft:#B8B6A8; --line:#3A3D33;
+      --political:#7896D1; --financial:#D9A05B; --cultural:#7CAE8C; --history:#B9A88A; --record:#A9B8C6; --flag:#D68271;
+      --egg:#E0AE5E; --shadow:0 6px 24px rgba(0,0,0,.45); color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1B1D18; --paper-2:#23261F; --ink:#E9E6DA; --ink-soft:#B8B6A8; --line:#3A3D33;
+    --political:#7896D1; --financial:#D9A05B; --cultural:#7CAE8C; --history:#B9A88A; --record:#A9B8C6; --flag:#D68271;
+    --egg:#E0AE5E; --shadow:0 6px 24px rgba(0,0,0,.45); color-scheme:dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;overflow:hidden;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;}
+  button{font-family:var(--sans);color:inherit;}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0;text-wrap:balance;}
+  a{color:var(--political);}
+  #stage{position:fixed;inset:0;background:#BFDDEB;}
+  #stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab;}
+  #stage canvas.hover{cursor:pointer;}
+  #stage canvas:active{cursor:grabbing;}
+
+  .panel{background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);}
+  .mark{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);}
+
+  .tb{position:fixed;left:calc(14px + env(safe-area-inset-left,0px));top:calc(14px + env(safe-area-inset-top,0px));padding:12px 14px;min-width:250px;max-width:calc(100vw - 28px);}
+  .tb h1{font-size:21px;margin:2px 0 8px;}
+  .progress{display:flex;align-items:center;gap:10px;}
+  .ticks{display:flex;gap:3px;}
+  .ticks i{width:12px;height:10px;border:1px solid var(--ink-soft);display:block;border-radius:50% 50% 45% 45%;}
+  .ticks i.on{background:var(--ink);border-color:var(--ink);}
+  .count{font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-soft);white-space:nowrap;}
+  .eggs{font-size:12px;color:var(--ink-soft);margin-top:6px;font-variant-numeric:tabular-nums;}
+
+  .tools{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:60vw;}
+  .tbtn{background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);padding:8px 11px;font-size:12.5px;font-weight:500;cursor:pointer;}
+  .tbtn:hover{border-color:var(--ink);}
+  .tbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  :is(.tbtn,.nb-item,.flabel,.card button,.egg button,.done button):focus-visible{outline:2px solid var(--political);outline-offset:2px;}
+
+  .nb{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));top:calc(62px + env(safe-area-inset-top,0px));width:320px;max-height:calc(100% - 140px);overflow-y:auto;padding:12px 0 6px;}
+  .nb .mark{padding:0 14px 8px;}
+  .nb-item{display:grid;grid-template-columns:14px 1fr 16px;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:none;border-top:1px solid var(--line);padding:9px 14px;cursor:pointer;font-size:13px;}
+  .nb-item:hover{background:var(--paper-2);}
+  .nb-item .dot{width:9px;height:9px;border-radius:50%;justify-self:center;}
+  .nb-item .t{display:flex;flex-direction:column;}
+  .nb-item .w{font-size:11.5px;color:var(--ink-soft);}
+
+  /* floating flock labels */
+  #labels{position:fixed;inset:0;pointer-events:none;}
+  .flabel{position:absolute;left:0;top:0;pointer-events:auto;display:flex;align-items:center;gap:7px;padding:4px 9px 4px 7px;
+    background:var(--paper);border:1px solid var(--line);box-shadow:0 3px 10px rgba(31,36,33,.16);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;
+    border-radius:999px;will-change:transform;}
+  .flabel .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .flabel .sub{font-weight:400;color:var(--ink-soft);}
+  .flabel.seen{opacity:.72;}
+  .flabel.hot,.flabel.sel{border-color:var(--ink);opacity:1;}
+  .flabel.sel{background:var(--ink);color:var(--paper);}
+  .flabel.sel .sub{color:var(--paper);opacity:.8;}
+  @media (max-width:700px){ .flabel .sub{display:none;} }
+
+  .card,.egg{position:fixed;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));width:460px;max-width:calc(100vw - 28px);max-height:calc(100% - 150px);overflow-y:auto;padding:16px 18px 14px;}
+  .card-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .card-head .num{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+  .catchip{font-size:11px;font-weight:600;padding:2px 8px;border:1px solid var(--c);color:var(--c);}
+  .x{margin-left:auto;background:none;border:1px solid var(--line);width:30px;height:30px;cursor:pointer;font-size:16px;line-height:1;}
+  .card h2,.egg h2{font-size:23px;margin:4px 0 4px;}
+  .breed{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;border:1px solid var(--line);background:var(--paper-2);padding:10px 12px;margin:8px 0 12px;font-size:12.5px;}
+  .breed b{font-weight:600;}
+  .breed i{color:var(--ink-soft);}
+  .breed .bn{grid-column:1 / -1;color:var(--ink-soft);line-height:1.45;}
+  .card h3{font-size:16px;margin:14px 0 2px;}
+  .where{font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
+  .facts{list-style:none;margin:0;padding:0;}
+  .facts li{border-top:1px solid var(--line);padding:10px 0;}
+  .facts p,.egg p{margin:0 0 6px;line-height:1.5;font-size:13.5px;max-width:62ch;}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12px;}
+  .meta a::after{content:" ↗";font-size:10px;}
+  .note{font-size:12px;color:var(--ink-soft);font-style:italic;}
+  .card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;border-top:1px solid var(--line);padding-top:10px;}
+  .card-foot button,.egg button,.done button{background:var(--ink);color:var(--paper);border:none;padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .card-foot .left{font-size:11.5px;color:var(--ink-soft);}
+  .egg{border-color:var(--egg);}
+  .egg .mark{color:var(--egg);}
+
+  .chip{display:inline-block;font-size:10.5px;padding:2px 7px;border:1px solid var(--line);color:var(--ink-soft);white-space:nowrap;}
+  .chip[data-s="verified"]{color:var(--ink);border-color:var(--ink-soft);}
+  .chip[data-s="secondary"],.chip[data-s="located"]{border-style:dotted;border-color:var(--ink-soft);}
+  .chip[data-s="estimated"]{color:var(--financial);border-color:var(--financial);}
+  .chip[data-s="unresolved"],.chip[data-s="nolink"]{color:var(--flag);border-color:var(--flag);}
+  .chip.lg{font-weight:600;background:var(--paper-2);}
+  .chip.lg[data-lg="conviction"],.chip.lg[data-lg="judgment"]{color:var(--paper);background:var(--ink);border-color:var(--ink);}
+  .chip.lg[data-lg="pending"]{color:var(--flag);border:1px dashed var(--flag);background:none;}
+
+  .help{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));padding:9px 12px;font-size:12px;color:var(--ink-soft);max-width:300px;line-height:1.55;}
+  .help b{color:var(--ink);font-weight:600;}
+  .done{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:480px;max-width:calc(100vw - 28px);max-height:calc(100% - 40px);overflow-y:auto;padding:22px 24px;}
+  .done h2{font-size:26px;margin:6px 0 12px;}
+  .done ol{margin:0 0 14px;padding-left:20px;}
+  .done li{margin-bottom:8px;line-height:1.5;}
+  .done .small{font-size:12px;color:var(--ink-soft);}
+  .nogl{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);padding:18px 20px;max-width:360px;font-size:13.5px;}
+
+  @media (max-width:700px){
+    .tb{min-width:0;padding:10px 12px;}
+    .tb h1{font-size:18px;margin-bottom:6px;}
+    .tools{top:auto;bottom:calc(14px + env(safe-area-inset-bottom,0px));right:14px;max-width:calc(100vw - 28px);}
+    .nb{top:auto;bottom:calc(60px + env(safe-area-inset-bottom,0px));left:14px;right:14px;width:auto;max-height:55%;}
+    .card,.egg{left:8px;right:8px;width:auto;max-width:none;bottom:calc(8px + env(safe-area-inset-bottom,0px));max-height:62%;}
+    .help{display:none;}
+  }
+</style>
+
+</head>
+<body>
+<div id="stage" aria-label="3D farm lake with flocks of geese"></div>
+<div id="labels"></div>
+
+<header class="tb panel">
+  <div class="mark">A field guide to Parcel Y-1 · Angels Knoll</div>
+  <h1>Goose Lake</h1>
+  <div class="progress"><div class="ticks" id="ticks"></div><span class="count" id="count">0 / 10 flocks</span></div>
+  <div class="eggs" id="eggs">Easter eggs 0 / 3</div>
+</header>
+
+<div class="tools">
+  <button class="tbtn" id="btnGuide" aria-expanded="false" aria-controls="guide">Field guide</button>
+  <button class="tbtn" id="btnLight">Light: afternoon</button>
+  <button class="tbtn" id="btnReset">Whole lake</button>
+  <button class="tbtn" id="btnQuality" aria-pressed="false">Quality: high</button>
+</div>
+
+<nav class="nb panel" id="guide" hidden aria-label="Field guide">
+  <div class="mark">Field guide · ten flocks, fourteen records</div>
+  <div id="guideList"></div>
+</nav>
+
+<section class="card panel" id="card" hidden aria-live="polite"></section>
+<section class="egg panel" id="egg" hidden aria-live="polite"></section>
+
+<div class="help panel" id="help"><b>Click a flock</b> (or its label) to read what it carries · <b>drag</b> to orbit · <b>Shift+drag</b> or <b>WASD</b> to pan · <b>scroll</b> to zoom. Something on the island looks familiar.</div>
+
+<section class="done panel" id="done" hidden>
+  <div class="mark">All ten flocks visited</div>
+  <h2>Why is this hill still empty?</h2>
+  <ol>
+    <li>The third California Plaza tower died with the early-1990s office market. The slope wasn't the cause.</li>
+    <li>Angels Landing won staff-level permits in 2022 but never a Council-approved deal. The City ended it in 2024, and the developer is suing.</li>
+    <li>The land now moves under state surplus rules: affordable developers get the first chance, and any housing must be at least 25% affordable.</li>
+    <li>As of September 2026, no notice had been filed with the state and no bidder had been named.</li>
+  </ol>
+  <p class="small">The geese are a way in, not a claim: breed notes are general farm knowledge, and every site fact links to its source. Research current as of Sept 28, 2026.</p>
+  <button id="doneClose">Back to the lake</button>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============================ SOURCES & RECORDS ============================ */
+const U = {
+  res2502:["CRA/LA Resolution 25-02 staff report (Oct 24, 2025)","https://crala.org/internet-site/Meetings/Board_Agenda_2025/Oct_24_2025_Item_5.pdf"],
+  min25:["CRA/LA minutes, Oct 24, 2025","http://www.crala.org/internet-site/Meetings/Board_Agenda_2025/Dec_5_2025_Item_2.pdf"],
+  hcdnoa:["HCD Surplus Land Act notices (data.ca.gov)","https://data.ca.gov/dataset/surplus-land-act-notices-of-availability-received"],
+  bid26:["CRA/LA Governing Board, Aug 26, 2026, Item 3","http://www.crala.org/internet-site/Meetings/Board_Agenda_2026/Aug_26_2026_Item_3.pdf"],
+  gbag:["CRA/LA Governing Board agenda, Aug 26, 2026","https://crala.org/internet-site/Meetings/Board_Agenda_2026/A08-26-26_GB_Special_Meeting.pdf"],
+  lacob:["LA County consolidated oversight boards","https://lacob.lacounty.gov/home/composition-of-consolidated-oversight-boards/"],
+  lacobag:["Third District Oversight Board agenda, Sept 8, 2026","https://crala.org/internet-site/Meetings/Board_Agenda_2026/A09-08-26_LACOB3_Regular_Agenda.pdf"],
+  cfpar:["Council File 14-0425, Attachment A (2014)","https://cityclerk.lacity.org/onlinedocs/2014/14-0425_MISC_12-08-14.pdf"],
+  matos:["Cal. Redevelopment Assn. v. Matosantos (2011)","https://www.courtlistener.com/opinion/5811601/california-redevelopment-assn-v-matosantos/"],
+  ceqa4:["CEQAnet, Angels Landing Final EIR","https://ceqanet.lci.ca.gov/2019039164/4"],
+  patch:["Patch, Bass named Metro board chair","https://patch.com/california/los-angeles/bass-appointed-metro-board-chair-fiscal-year-2026-27"],
+  abc7:["ABC7, 2026 primary results","https://abc7.com/live-updates/california-primary-election-2026-voters-decide-key-races-governor-los-angeles-mayor-congressional-districts/19213908/entry/19224615/"],
+  eso:["Esotouric, reopen Angels Knoll","https://esotouric.substack.com/p/angelsknoll"],
+  conserv:["LA Conservancy, Angels Flight","https://www.laconservancy.org/learn/historic-places/angels-flight/"],
+  ntsb01:["NTSB report RAR-03/03","https://www.ntsb.gov/investigations/AccidentReports/Reports/RAR0303.pdf"],
+  ntsb13:["NTSB brief RAB-14/02","https://www.ntsb.gov/investigations/AccidentReports/Reports/RAB1402.pdf"],
+  praport:["CRA report on the Praport settlement (2006)","https://cityclerk.lacity.org/onlinedocs/2006/06-1283_rpt_cra_6-1-06.pdf"],
+  w2cal:["Wikipedia, 2Cal","https://en.wikipedia.org/wiki/2Cal"],
+  urb16:["Urbanize LA, City to seek developer (2016)","https://la.urbanize.city/post/city-seek-developer-angels-knoll-site"],
+  wCP:["Wikipedia, California Plaza","https://en.wikipedia.org/wiki/California_Plaza"],
+  wBH:["Wikipedia, Bunker Hill","https://en.wikipedia.org/wiki/Bunker_Hill,_Los_Angeles"],
+  cf17:["Council action, Dec 13, 2017","https://cityclerk.lacity.org/onlinedocs/2014/14-0425-S4_CA_12-16-2017.pdf"],
+  cla23:["CLA report, Feb 8, 2023","https://cityclerk.lacity.org/onlinedocs/2014/14-0425-s4_rpt_cla_02-08-23.pdf"],
+  vtt:["City Planning, VTT-82936-CN","https://planning.lacity.gov/pdiscaseinfo/Search/casenumber/VTT-82936-CN"],
+  za:["City Planning, ZA-2018-3271","https://planning.lacity.gov/pdiscaseinfo/Search/casenumber/ZA-2018-3271-MCUP-CUX-SPPA-SPP"],
+  da:["City Planning, CPC-2018-3272-DA","https://planning.lacity.gov/pdiscaseinfo/Search/casenumber/CPC-2018-3272-DA"],
+  cf22:["Council action, Jul 1, 2022","https://cityclerk.lacity.org/onlinedocs/2014/14-0425-S4_CAF_7-1-22.pdf"],
+  ruling:["Tentative ruling, LASC 24STCV32173","https://rulings.law/rulings/judge-richard-l-fruin/24stcv32173-2025-03-11.html"],
+  claridge:["TPC Angels Landing v. Claridge (NY, 2022)","https://www.casemine.com/judgement/us/62b53facb50db94eeedcdf9e"],
+  goldman:["CRA v. Goldman, 61 Cal.2d 21","https://www.courtlistener.com/opinion/1285874/in-re-redevelopment-plan-for-bunker-hill-v-goldman/"],
+  westend:["West End Museum, Bunker Hill urban renewal","https://thewestendmuseum.org/history/topic/urban-renewal/the-angels-flight-from-the-hill-urban-renewal-in-l-a-s-bunker-hill-neighborhood/"],
+  rhtf:["CRA report on Bunker Hill housing funds (2011)","https://cityclerk.lacity.org/onlinedocs/2009/09-0875_rpt_cra_03-17-11.pdf"],
+  angelus:["Angelus Plaza","https://angelusplaza.org/who-we-are/"],
+  asla:["Urbanize LA, ASLA contest","https://la.urbanize.city/post/asla-design-contest-reimagines-dtlas-shuttered-angels-knoll"],
+  eir:["LA City Planning, Angels Landing EIR","https://planning.lacity.gov/development-services/eir/angels-landing-project-0"],
+  wAL:["Wikipedia, Angels Landing","https://en.wikipedia.org/wiki/Angels_Landing_(Los_Angeles)"],
+  moca:["MOCA Board of Trustees","https://www.moca.org/about/board"],
+  abbott:["MOCA names Jonathan Abbott","https://www.moca.org/moca-names-jonathan-abbott-ceo-maurice-marciano-director"],
+  mocamem:["MOCA membership page","https://www.moca.org/membership"],
+  propub:["ProPublica, MOCA Form 990","https://projects.propublica.org/nonprofits/organizations/953433820"],
+  broad:["The Broad, expansion","https://www.thebroad.org/broad-expansion"],
+  wGA:["Wikipedia, Grand Avenue Project","https://en.wikipedia.org/wiki/Grand_Avenue_Project"],
+  ladnGA:["LA Downtown News, Grand Avenue plan","https://www.ladowntownnews.com/news/developer-unveils-new-plan-for-grand-avenue/article_73c455f8-61a7-11e2-8810-0019bb2963f4.html"],
+  emerson:["Related, The Emerson","https://www.related.com/our-company/properties/emerson"],
+  chp:["California Housing Partnership, LA County 2026","https://calhousingpartnership.org/wp-content/uploads/2026/05/Los-Angeles_Housing_Report_2026.pdf"],
+  hhh:["City Controller, Prop HHH audit","https://controller.lacity.gov/audits/problems-and-progress-of-prop-hhh"],
+  ula:["LAist, Measure ULA","https://laist.com/news/housing-homelessness/los-angeles-city-mansion-tax-measure-ula-transfer-state-sacramento-ab-736-howard-jarvis-novemeber-ballot-measure"],
+  hillside:["LAist, Hillside Villa","https://laist.com/news/housing-homelessness/hillside-villa-chinatown-apartment-affordable-housing-eminent-domain-city-council-los-angeles-tom-botz-tenants-landlord"],
+  huizar:["US Attorney, Huizar sentenced","https://www.justice.gov/usao-cdca/pr/former-los-angeles-politician-jose-huizar-sentenced-13-years-federal-prison"],
+  carmel:["US Attorney, Carmel Partners agreement","https://www.justice.gov/usao-cdca/pr/developer-agrees-pay-12-million-resolve-criminal-probe-executive-s-relationship-ex-la"],
+  price:["LA County DA, Price to stand trial","https://da.lacounty.gov/media/news/curren-price-ordered-second-la-county-superior-court-judge-stand-trial-12-public"],
+  lalliance:["Clearinghouse, LA Alliance v. City","https://clearinghouse.net/case/43959/"],
+  laistLA:["LAist, amended LA Alliance agreement","https://laist.com/news/housing-homelessness/la-agrees-to-boost-housing-and-shelter-options-for-people-experiencing-homelessness"]
+};
+const STATUS = { verified:"Primary source", located:"Official doc, summary reported", secondary:"Reported", estimated:"Estimate", unresolved:"Unresolved", nolink:"Source not linked" };
+const CATL = { political:"Who decides", financial:"Money & land", cultural:"Culture", history:"Site history", record:"Public record", flag:"Housing context" };
+
+const REC = {
+sale:{ t:"Is the land for sale?", where:"Corner of 4th & Hill", facts:[
+  {t:"The City's option on the parcel expired unexercised on Sept 30, 2025.", s:"verified", src:["res2502"]},
+  {t:"On Oct 24, 2025, CRA/LA's Governing Board voted 3–0 (Resolution 25-02) to declare it surplus land under the state Surplus Land Act.", s:"verified", src:["res2502","min25"]},
+  {t:"The rules: affordable developers get 60 days to express interest. If any do, CRA/LA must negotiate in good faith for at least 90 days. Any housing built must be at least 25% affordable.", s:"verified", src:["res2502"]},
+  {t:"As of HCD's Sept 25, 2026 data, no notice for this parcel had been filed with the state. No sponsor or bidder has been publicly named.", s:"verified", src:["hcdnoa","bid26"]}]},
+gates:{ t:"The locked gates", where:"Foot of the stairs, Hill St", facts:[
+  {t:"DTLA Alliance, the downtown business improvement district, keeps the site for CRA/LA: power-washing the plaza and stairs, locking the stairwell gates, running security patrols.", s:"verified", src:["bid26"]},
+  {t:"In August 2026 CRA/LA extended that contract to June 30, 2027 ($197,000 in total), saying it \"prepares for disposition.\" No sale appears to have happened.", s:"verified", src:["bid26"]},
+  {t:"Esotouric has campaigned publicly to reopen the park.", s:"secondary", src:["eso"]}]},
+decide:{ t:"Who decides?", where:"CRA/LA and its oversight", facts:[
+  {t:"Not the City Council. CRA/LA, the successor to the old redevelopment agency, owns the land. Its three board members are appointed by the Governor: Mee Semcken (Chair), Ed P. Reyes and Kelli Bernard.", s:"verified", src:["gbag"]},
+  {t:"Its actions go to the LA County Third District Consolidated Oversight Board, seven members chaired by Steve Koffroth, which has covered CRA/LA since July 2018.", s:"verified", src:["lacob","lacobag"]},
+  {t:"The state Dept. of Finance approved CRA/LA's property plan in 2014, classifying this parcel as \"Retained for Future Development.\"", s:"verified", src:["res2502","cfpar"]},
+  {t:"Redevelopment agencies were dissolved after Cal. Redevelopment Assn. v. Matosantos (2011). That's why the parcel sits with a winding-down agency.", s:"verified", src:["matos"]}]},
+portal:{ t:"The Metro portal", where:"Lower corner of the site", facts:[
+  {t:"An entrance to Metro's Pershing Square Station sits on the parcel. The Angels Landing EIR kept it in place.", s:"verified", src:["ceqa4"]},
+  {t:"Mayor Karen Bass chairs the Metro board for FY2026–27. She faces Nithya Raman in the Nov 3, 2026 runoff, and the seat follows whoever is mayor.", s:"secondary", src:["patch","abc7"]},
+  {t:"No Metro easement document or board action on the parcel has been found.", s:"unresolved", src:[]}]},
+olive:{ t:"Rights over the street", where:"Olive St edge", facts:[
+  {t:"2 Cal Land (LA) Owner, LLC, the owner of Two California Plaza, holds air rights above 17 ft over Olive Street on part of the lot (2016 deed).", s:"verified", src:["res2502"]},
+  {t:"A 1983 reciprocal easement agreement with Bunker Hill Associates still binds the parcel.", s:"verified", src:["res2502"]},
+  {t:"The previous entitlement allowed a floor-area ratio of up to 13:1, about 1,269,150 sq ft.", s:"verified", src:["eir"]},
+  {t:"CRA/LA's valuation moved from ~$20M (2015) to $50M (2021, for the market-rate deal). A value with housing restrictions would likely be far lower.", s:"estimated", src:["wAL"]}]},
+landing:{ t:"Angels Landing, 2017–2025", where:"The deal that ended in court", facts:[
+  {t:"Dec 13, 2017: Council picked Angels Landing Partners (MacFarlane, Peebles, Claridge) as developer. The negotiating agreement was signed Mar 28, 2018.", s:"verified", src:["cf17","cla23"]},
+  {t:"Feb 3, 2022: planning staff approved the tract map and zoning permits. The Development Agreement was withdrawn the same day, so the Planning Commission and PLUM never heard the project.", s:"verified", src:["vtt","za","da"]},
+  {t:"The Council never approved the sale or development agreements. In July 2022 they went back to committee.", s:"verified", src:["cf22"]},
+  {t:"The City ended the deal in Feb 2024, citing an unapproved ownership change after a partner dispute. The developer sued (LASC No. 24STCV32173, filed Dec 6, 2024). In March 2025 the court let the contract claim go forward, and the case is reported as ongoing.", s:"verified", src:["ruling","claridge"]}]},
+tower:{ t:"The tower that never came", where:"Middle of the slope", facts:[
+  {t:"This parcel was meant for the third California Plaza tower, about 65 stories, planned as the Metropolitan Water District's headquarters.", s:"secondary", src:["w2cal"]},
+  {t:"It was abandoned in the early 1990s, after Two California Plaza opened in 1992 into an office slump. The cause was the market, not the slope.", s:"secondary", src:["urb16","wCP"]},
+  {t:"Bunker Hill Associates got the public land for California Plaza in exchange for financing MOCA's $23M building. They built two of three towers, so the bargain was never finished.", s:"secondary", src:["wBH"]}]},
+memory:{ t:"Before the towers", where:"Bunker Hill, 1959–1964", facts:[
+  {t:"The 1959 Bunker Hill redevelopment plan was challenged and upheld by the CA Supreme Court on Feb 27, 1964 (CRA v. Goldman, 61 Cal.2d 21).", s:"verified", src:["goldman"]},
+  {t:"Sources count about 7,310 dwelling units cleared. Estimates of residents displaced range from about 8,000 to 22,000.", s:"secondary", src:["westend"]},
+  {t:"CRA kept a Bunker Hill Replacement Housing Trust Fund and financed units elsewhere. No official count of the replacement units never built has been found.", s:"secondary", src:["rhtf"]},
+  {t:"Angelus Plaza (1,093 senior affordable apartments, opened 1980) is the main replacement-type housing built on the Hill.", s:"secondary", src:["angelus"]}]},
+moca:{ t:"MOCA", where:"Grand Avenue", facts:[
+  {t:"The museum was the public-benefit half of the California Plaza deal: a $23M building financed by the developer.", s:"secondary", src:["wBH"]},
+  {t:"The Mayor and the Council President hold ex-officio seats on MOCA's board. So do artist trustees Barbara Kruger, Tala Madani, Rodney McMillian and Christina Quarles.", s:"verified", src:["moca"]},
+  {t:"Jonathan Abbott became CEO & Maurice Marciano Director on Sept 24, 2026.", s:"verified", src:["abbott"]},
+  {t:"MOCA reports about 84% of its revenue from philanthropy. Its tax filing for FY2025 shows about 75% from contributions. Any capital contribution to this site would depend on fundraising.", s:"verified", src:["mocamem","propub"]}]},
+bench:{ t:"The park on the hill", where:"Angels Knoll park", facts:[
+  {t:"After the tower died, CRA turned part of the site into the temporary Angels Knoll park, later closed.", s:"secondary", src:["urb16"]},
+  {t:"(500) Days of Summer (2009) made a bench here, overlooking downtown, part of public memory.", s:"nolink", src:[]},
+  {t:"A 2026 ASLA Emerging Professionals competition asked designers to reimagine the knoll. First place went to \"Folding Angel's Knoll\" by Yuehui Gong.", s:"secondary", src:["asla"]}]},
+flight:{ t:"Angels Flight", where:"The funicular on the site's north edge", facts:[
+  {t:"The funicular is LA Historic-Cultural Monument No. 4. Its foundation supported the earlier Angels Landing proposal in writing.", s:"verified", src:["conserv"]},
+  {t:"Part of the lot was deeded to the Angels Flight Railway Foundation on Dec 22, 2017. That piece is excluded from the surplus parcel.", s:"verified", src:["res2502"]},
+  {t:"2001: a runaway car collision killed one passenger. The former CRA paid $425,000 toward settling the lawsuits.", s:"located", src:["ntsb01","praport"]},
+  {t:"2013: after a derailment, the NTSB criticized the lack of a track-side walkway. One was later built along the site's edge.", s:"located", src:["ntsb13"]}]},
+broad:{ t:"The Grand Avenue precedent", where:"The Broad and its neighbors", facts:[
+  {t:"The Broad's expansion broke ground in April 2025 and topped out in May 2026. It opens in 2028.", s:"verified", src:["broad"]},
+  {t:"The neighboring Grand Avenue Project, with Related as developer, required 20% affordable units in each residential building.", s:"secondary", src:["wGA","ladnGA"]},
+  {t:"It delivered, though late: The Emerson (2014) and The Grand (86 of 436 units, opened 2022). The closest precedent for affordable-housing terms on public Bunker Hill land.", s:"secondary", src:["emerson"]}]},
+market:{ t:"The housing math", where:"LA County", facts:[
+  {t:"473,603 low-income renter households in LA County don't have access to an affordable home (California Housing Partnership, 2026).", s:"verified", src:["chp"]},
+  {t:"Prop HHH supportive units averaged about $597,000 each and took 3 to 6 years (City Controller, 2022). Any project here will be measured against that benchmark.", s:"verified", src:["hhh"]},
+  {t:"Measure ULA has raised about $1.2B since 2023 and survived its court challenge. It's a likely source of gap financing.", s:"secondary", lg:"Judgment", src:["ula"]},
+  {t:"Hillside Villa in Chinatown shows what happens when an affordability covenant expires: rent notices of more than 200%, a rent strike, and a 2024 deal with the City.", s:"secondary", lg:"Settlement", src:["hillside"]}]},
+hall:{ t:"City Hall on trial", where:"Cases over development approvals", facts:[
+  {t:"José Huizar was the CD14 Councilmember when Angels Landing was selected. He pleaded guilty to racketeering conspiracy and was sentenced to 13 years in 2024. The DOJ releases name four downtown projects; Angels Landing isn't one of them.", s:"verified", lg:"Conviction", src:["huizar"]},
+  {t:"Carmel Partners paid $1.2M under a non-prosecution agreement. The DOJ says the Huizar-chaired PLUM committee accepted its request to reduce a required 11% very-low-income share.", s:"verified", lg:"Settlement (non-prosecution)", src:["carmel"]},
+  {t:"Councilmember Curren Price (CD9) faces 12 felony charges and has pleaded not guilty.", s:"verified", lg:"Pending allegation · not proven", src:["price"]},
+  {t:"In LA Alliance v. City of LA, a federal judge found the City in breach of its homelessness settlement in June 2025. A May 2026 amended agreement calls for 14,000 housing or shelter spots by mid-2027.", s:"secondary", lg:"Settlement · court finding of breach", src:["lalliance","laistLA"]}]}
+};
+
+/* Each breed carries one topic. Breed notes are general farm knowledge, not site claims. */
+const FLOCKS = [
+ { id:"chinese", breed:"Chinese goose", latin:"Anser cygnoides, domestic", cat:"political", topic:"The gatekeepers",
+   note:"Domesticated from the wild swan goose. The knob on its bill and its loud honk made it the classic farm watch goose. Fitting for the bodies that guard this land.",
+   recs:["decide","portal"], geese:[["chinese",5]] },
+ { id:"swan", breed:"Swan goose", latin:"Anser cygnoides", cat:"political", topic:"Is the land for sale?",
+   note:"The wild ancestor of Chinese and African geese, native to East Asia and listed as Vulnerable. Where the story starts now: the surplus-land process.",
+   recs:["sale","gates"], geese:[["swan",4]] },
+ { id:"toulouse", breed:"Toulouse goose", latin:"Anser anser, domestic", cat:"financial", topic:"Money & land",
+   note:"A heavy grey French breed from around Toulouse, known for its size and the dewlap under its bill. The heavyweights carry the numbers.",
+   recs:["olive"], geese:[["toulouse",4]] },
+ { id:"embden", breed:"Embden goose", latin:"Anser anser, domestic", cat:"record", topic:"Angels Landing",
+   note:"A tall white German breed named for the town of Emden. This flock is followed by goslings, like the lawsuit that trails the old deal.",
+   recs:["landing"], geese:[["embden",3],["gosling",4]] },
+ { id:"canada", breed:"Canada goose", latin:"Branta canadensis", cat:"history", topic:"The tower that flew away",
+   note:"A wild North American goose with a black neck and white chinstrap. Many migrate, and plenty now live year-round in LA parks. Watch them take off now and then, like the tower that left for good.",
+   recs:["tower"], geese:[["canada",6]] },
+ { id:"greylag", breed:"Greylag goose", latin:"Anser anser", cat:"history", topic:"Before the towers",
+   note:"The wild ancestor of most European farm geese. It carries the site's origins: the 1960s clearance.",
+   recs:["memory"], geese:[["greylag",5]] },
+ { id:"sebastopol", breed:"Sebastopol goose", latin:"Anser anser, domestic", cat:"cultural", topic:"Culture on the hill",
+   note:"Named for Sevastopol on the Black Sea. Its long, curling feathers make it the showiest goose on the farm.",
+   recs:["moca","bench"], geese:[["sebastopol",4]] },
+ { id:"african", breed:"African goose", latin:"Anser cygnoides, domestic", cat:"cultural", topic:"The neighbors",
+   note:"Despite its name, it descends from the Asian swan goose. Big, calm, and easy to spot by its knob and dewlap.",
+   recs:["flight","broad"], geese:[["african",4]] },
+ { id:"pilgrim", breed:"Pilgrim goose", latin:"Anser anser, domestic", cat:"flag", topic:"The housing math",
+   note:"An American breed whose ganders are white and geese are grey, so you can tell them apart from hatching. Some numbers here are just as clear.",
+   recs:["market"], geese:[["pilgrimM",2],["pilgrimF",2]] },
+ { id:"roman", breed:"Roman goose", latin:"Anser anser, domestic", cat:"flag", topic:"City Hall on trial",
+   note:"A small Italian breed. Legend says the sacred geese on Rome's Capitoline Hill raised the alarm during a night attack. These carry the alarms raised about City Hall.",
+   recs:["hall"], geese:[["roman",5]] }
+];
+FLOCKS.forEach((f,i)=>{ f.n = String(i+1).padStart(2,"0"); f.seen = false; });
+
+/* ============================ HUD ============================ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cssCat = c => `var(--${c})`;
+let selIdx = -1, doneShown = false, pendingDone = false;
+const eggsFound = new Set();
+$("ticks").innerHTML = FLOCKS.map(()=>"<i></i>").join("");
+
+function refreshHUD(){
+  const seen = FLOCKS.filter(f=>f.seen).length;
+  $("count").textContent = `${seen} / ${FLOCKS.length} flocks`;
+  [...$("ticks").children].forEach((t,i)=>t.classList.toggle("on", i < seen));
+  $("eggs").textContent = `Easter eggs ${eggsFound.size} / 3`;
+  $("guideList").innerHTML = FLOCKS.map((f,i)=>`<button class="nb-item" data-i="${i}">
+      <span class="dot" style="background:${cssCat(f.cat)}"></span>
+      <span class="t"><span>${esc(f.breed)}</span><span class="w">${esc(f.topic)} · ${f.recs.length} record${f.recs.length>1?"s":""}</span></span>
+      <span aria-label="${f.seen?"visited":"not visited"}">${f.seen?"✓":""}</span></button>`).join("");
+  $("guideList").querySelectorAll(".nb-item").forEach(b=>b.onclick = ()=>{ selectFlock(+b.dataset.i); toggleGuide(false); });
+  labelEls.forEach((el,i)=>el.classList.toggle("seen", FLOCKS[i].seen));
+}
+function lgChip(lg){ if(!lg) return ""; const k = lg.split(/[ ·(]/)[0].toLowerCase(); return `<span class="chip lg" data-lg="${k}">${esc(lg)}</span>`; }
+function openCard(i){
+  const f = FLOCKS[i]; $("egg").hidden = true;
+  const first = !f.seen; f.seen = true; refreshHUD();
+  const recs = f.recs.map(k=>{ const r = REC[k];
+    return `<h3>${esc(r.t)}</h3><div class="where">${esc(r.where)}</div><ul class="facts">${r.facts.map(x=>`<li><p>${esc(x.t)}</p><div class="meta">${lgChip(x.lg)}<span class="chip" data-s="${x.s}">${STATUS[x.s]}</span>${x.src.map(s=>`<a href="${U[s][1]}" target="_blank" rel="noopener">${esc(U[s][0])}</a>`).join("")}</div></li>`).join("")}</ul>`; }).join("");
+  const next = FLOCKS.findIndex((x,j)=>!x.seen && j!==i);
+  $("card").innerHTML = `<div class="card-head"><span class="num">Flock ${f.n}</span>
+      <span class="catchip" style="--c:${cssCat(f.cat)}">${CATL[f.cat]}</span>
+      <button class="x" id="cardClose" aria-label="Close">×</button></div>
+    <h2>${esc(f.topic)}</h2>
+    <div class="breed"><b>${esc(f.breed)}</b><i>${esc(f.latin)}</i><span class="bn">${esc(f.note)}</span></div>
+    ${recs}
+    <div class="card-foot"><span class="left">${FLOCKS.filter(x=>x.seen).length} of ${FLOCKS.length} flocks visited</span>
+      <button id="cardNext">${next>=0 ? "Next flock →" : "See the answer"}</button></div>`;
+  $("card").hidden = false; $("card").scrollTop = 0;
+  $("cardClose").onclick = ()=>{ closeCard(); };
+  $("cardNext").onclick = ()=>{ if(next>=0) selectFlock(next); else { closeCard(); showDone(); } };
+  if(first && FLOCKS.every(x=>x.seen)) pendingDone = true;
+}
+function closeCard(){ $("card").hidden = true; selIdx = -1; labelEls.forEach(el=>el.classList.remove("sel")); if(pendingDone && !doneShown){ pendingDone = false; showDone(); } }
+function showDone(){ doneShown = true; $("done").hidden = false; $("doneClose").focus(); }
+$("doneClose").onclick = ()=>{ $("done").hidden = true; };
+function toggleGuide(force){ const open = force===undefined ? $("guide").hidden : force; $("guide").hidden = !open; $("btnGuide").setAttribute("aria-expanded", String(open)); }
+$("btnGuide").onclick = ()=>toggleGuide();
+function showEgg(id, html){ $("card").hidden = true; selIdx = -1; labelEls.forEach(el=>el.classList.remove("sel"));
+  $("egg").innerHTML = html + `<button id="eggClose">Back to the lake</button>`; $("egg").hidden = false;
+  $("eggClose").onclick = ()=>{ $("egg").hidden = true; if(id==="bench") setLight(lightBefore); };
+  if(!eggsFound.has(id)){ eggsFound.add(id); refreshHUD(); } }
+
+/* flock labels */
+const labelEls = FLOCKS.map((f,i)=>{
+  const b = document.createElement("button"); b.className = "flabel"; b.setAttribute("aria-label", `${f.breed}: ${f.topic}`);
+  b.innerHTML = `<span class="dot" style="background:${cssCat(f.cat)}"></span>${esc(f.breed.replace(" goose",""))}<span class="sub">· ${esc(f.topic)}</span>`;
+  b.onclick = ()=>selectFlock(i); $("labels").appendChild(b); return b;
+});
+let selectFlock = i => openCard(i);
+refreshHUD();
+
+/* ============================ 3D ============================ */
+let renderer, scene, camera, sun, hemi, sky, water, staticMesh;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const lin = hex => new THREE.Color(hex).convertSRGBToLinear();
+const sm = (a,b,x) => { const t = Math.max(0, Math.min(1, (x-a)/(b-a))); return t*t*(3-2*t); };
+let seed = 11; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+const hash = (x,z) => { const s = Math.sin(x*127.1 + z*311.7)*43758.5453; return s - Math.floor(s); };
+
+/* lake shape: a wobbly ellipse, shared with the water shader */
+const LR = { x:30, z:21 };
+const shapeR = th => 1 + .07*Math.sin(3*th + .5) + .04*Math.cos(5*th);
+const ellN = (x,z) => Math.hypot(x/LR.x, z/LR.z) / shapeR(Math.atan2(z,x));
+const IS = { x:1.5, z:-1, r:4.6 };
+function heightAt(x,z){
+  const e = ellN(x,z); let h;
+  if(e < 1) h = -1.8*(1 - e*e);
+  else h = .28*sm(1,1.1,e) + 1.9*sm(1.35,2.3,e)*(.5 + .5*Math.sin(x*.07 + 1.3)*Math.cos(z*.06 - .4)) + .12*Math.sin(x*.31)*Math.sin(z*.27)*sm(1.1,1.4,e);
+  const di = Math.hypot(x-IS.x, z-IS.z)/IS.r;
+  if(di < 1) h = Math.max(h, 2.0*(1 - Math.pow(di,1.6)) - .3);
+  return h;
+}
+
+/* ---------- geometry builders: every static part is vertex-coloured and merged into ONE mesh ---------- */
+const G = {
+  ico1:new THREE.IcosahedronGeometry(1,1), ico0:new THREE.IcosahedronGeometry(1,0),
+  box:new THREE.BoxGeometry(1,1,1), cyl6:new THREE.CylinderGeometry(1,1,1,6), cyl8:new THREE.CylinderGeometry(1,1,1,10),
+  cyl4:new THREE.CylinderGeometry(1,1,1,4), cone5:new THREE.ConeGeometry(1,1,5), cone6:new THREE.ConeGeometry(1,1,6)
+};
+const _e = new THREE.Euler(), _q = new THREE.Quaternion();
+function M(x=0,y=0,z=0, rx=0,ry=0,rz=0, sx=1,sy=sx,sz=sx){ _e.set(rx,ry,rz,"YXZ"); _q.setFromEuler(_e); return new THREE.Matrix4().compose(new THREE.Vector3(x,y,z), _q, new THREE.Vector3(sx,sy,sz)); }
+function part(geo, hex, m){
+  const g = geo.index ? geo.toNonIndexed() : geo.clone();
+  if(g.attributes.uv) g.deleteAttribute("uv");
+  if(m) g.applyMatrix4(m);
+  const n = g.attributes.position.count, c = lin(hex), a = new Float32Array(n*3);
+  for(let i=0;i<n;i++){ a[i*3]=c.r; a[i*3+1]=c.g; a[i*3+2]=c.b; }
+  g.setAttribute("color", new THREE.BufferAttribute(a,3)); return g;
+}
+function merge(list){
+  let n = 0; list.forEach(g=>n += g.attributes.position.count);
+  const P = new Float32Array(n*3), N = new Float32Array(n*3), C = new Float32Array(n*3); let o = 0;
+  list.forEach(g=>{ P.set(g.attributes.position.array, o); N.set(g.attributes.normal.array, o); C.set(g.attributes.color.array, o); o += g.attributes.position.count*3; g.dispose(); });
+  const out = new THREE.BufferGeometry();
+  out.setAttribute("position", new THREE.BufferAttribute(P,3)); out.setAttribute("normal", new THREE.BufferAttribute(N,3)); out.setAttribute("color", new THREE.BufferAttribute(C,3));
+  out.computeBoundingSphere(); return out;
+}
+const ST = []; const add = (geo,hex,m) => ST.push(part(geo,hex,m));
+
+/* ---------- goose models: body / head+neck / wings, each instanced per breed ---------- */
+const VAR = {
+  chinese:   {body:0xB89574, belly:0xEFE3CE, breast:0xD9C3A0, neck:0xE0CDAE, stripe:0x6B4A2E, head:0xA9855F, bill:0x2B2622, knob:0x2B2622, wing:0x8E6E50, tip:0x5E4633, neckL:1.0, neckW:.1},
+  swan:      {body:0xA88B6E, belly:0xF2E9DA, breast:0xE6D6BE, neck:0xEDE2CF, stripe:0x5A3F2A, head:0x7A5A40, bill:0x1F1B18, billL:1.3, wing:0x856849, tip:0x4F3B2A, neckL:.95, neckW:.09},
+  toulouse:  {body:0x8C8A86, belly:0xF0EDE7, breast:0x9C9994, neck:0x8A8883, head:0x7F7D78, bill:0xF08A2E, dewlap:0x8C8A86, wing:0x6F6D69, tip:0xD9D6D0, neckL:.62, neckW:.15, size:1.15},
+  embden:    {body:0xF6F4EE, belly:0xFFFFFF, breast:0xF6F4EE, neck:0xF6F4EE, head:0xF6F4EE, bill:0xF28C28, wing:0xE7E3DA, tip:0xD8D3C8, neckL:.95, neckW:.12, size:1.15},
+  canada:    {body:0x7B6A58, belly:0xEDE6D8, breast:0xB3A38C, neck:0x1B1B1B, head:0x1B1B1B, chin:0xF7F5F0, bill:0x1B1B1B, wing:0x5E503F, tip:0x3F352A, tail:0x1B1B1B, neckL:1.05, neckW:.085},
+  greylag:   {body:0x9A9285, belly:0xDAD4C8, breast:0xA59C8E, neck:0x8F877A, head:0x8F877A, bill:0xE8926A, wing:0x7B7366, tip:0x5E574D, neckL:.85, neckW:.1},
+  sebastopol:{body:0xF7F5F0, belly:0xFFFFFF, breast:0xF7F5F0, neck:0xF7F5F0, head:0xF7F5F0, bill:0xF28C28, wing:0xF2EFE8, tip:0xE6E2D8, curls:true, neckL:.75, neckW:.11, size:.95},
+  african:   {body:0xA38A70, belly:0xEFE5D4, breast:0xD9C8AD, neck:0xDCCBB0, stripe:0x5F4631, head:0x6F5641, bill:0x2B2622, knob:0x2B2622, knobS:1.4, dewlap:0xDCCBB0, wing:0x7E6650, tip:0x4E3C2B, neckL:.9, neckW:.13, size:1.15},
+  pilgrimM:  {body:0xF4F2EB, belly:0xFFFFFF, breast:0xF4F2EB, neck:0xF4F2EB, head:0xF4F2EB, bill:0xF2A04B, wing:0xE8E4DA, tip:0xDAD5C9, neckL:.8, neckW:.11, size:.95},
+  pilgrimF:  {body:0x9C968C, belly:0xEAE5DC, breast:0xAAA398, neck:0x9C968C, head:0x9C968C, face:0xF4F2EB, bill:0xF2A04B, wing:0x7F796F, tip:0x5F5A52, neckL:.8, neckW:.11, size:.92},
+  roman:     {body:0xF8F6F1, belly:0xFFFFFF, breast:0xF8F6F1, neck:0xF8F6F1, head:0xF8F6F1, bill:0xF2A04B, wing:0xEEEBE3, tip:0xE0DCD2, crest:true, neckL:.62, neckW:.1, size:.82},
+  gosling:   {body:0xF4D56A, belly:0xF9E7A0, breast:0xF6DC7A, neck:0xF4D56A, head:0xF2CC55, bill:0x6B5A3A, wing:0xE9C45A, tip:0xE0B94C, neckL:.32, neckW:.14, size:.42, fluffy:true},
+  hen:       {body:0xB5562E, belly:0xC8693A, breast:0xC06034, neck:0xC9703E, head:0xC9703E, bill:0xE8B84A, wing:0x8E3F20, tip:0x5E2A15, tail:0x2F2419, hen:true, neckL:.3, neckW:.14, size:.6}
+};
+function gooseGeo(v){
+  const s = (v.size || 1)*(v.hen ? 1 : 1.25), B = [], H = [], WL = [], WR = [];
+  const b = (geo,hex,m) => B.push(part(geo,hex,m)), h = (geo,hex,m) => H.push(part(geo,hex,m));
+  // body: soft rounded hull, lighter belly, puffed breast, tail
+  b(G.ico1, v.body, M(0,.18,-.02, 0,0,0, .52,.4,.86));
+  b(G.ico1, v.belly, M(0,.06,.08, 0,0,0, .47,.3,.72));
+  b(G.ico1, v.breast, M(0,.3,.52, 0,0,0, .36,.34,.36));
+  if(v.hen){ b(G.cone5, v.tail, M(0,.6,-.62, -.45,0,0, .28,.7,.14)); b(G.cone5, v.tail, M(0,.52,-.72, -.9,0,0, .22,.55,.12)); }
+  else b(G.cone5, v.tail || v.wing, M(0,.34,-.86, -1.2,0,0, .22,.44,.14));
+  if(v.curls) for(let k=0;k<11;k++){ const a = hash(k,3)-.5, c = hash(k,7); b(G.ico0, k%2?0xFFFFFF:0xEDEAE2, M(a*.6, .42+c*.12, -.55+k*.09, c*2,a*3,0, .15,.08,.2)); }
+  if(v.fluffy) for(let k=0;k<6;k++) b(G.ico0, v.belly, M((hash(k,1)-.5)*.7, .25+hash(k,2)*.2, (hash(k,4)-.5)*1.1, hash(k,5)*3,0,0, .22));
+  // neck + head, built around the neck base (pivot)
+  const L = v.neckL, curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(0,-.05,-.04), new THREE.Vector3(0,L*.7,-.02), new THREE.Vector3(0,L,.16));
+  h(new THREE.TubeGeometry(curve, 6, v.neckW, 6, false), v.neck);
+  if(v.stripe) h(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(new THREE.Vector3(0,.05,-.1), new THREE.Vector3(0,L*.7,-.09), new THREE.Vector3(0,L-.02,.1)), 6, v.neckW*.45, 5, false), v.stripe);
+  h(G.ico1, v.neck, M(0,-.02,-.02, 0,0,0, v.neckW*1.5));
+  const hy = L + .06, hz = .22;
+  h(G.ico1, v.head, M(0,hy,hz, 0,0,0, .16,.15,.21));
+  if(v.face) h(G.ico1, v.face, M(0,hy+.01,hz+.08, 0,0,0, .13,.11,.12));
+  const bl = .25*(v.billL||1);
+  h(G.cone6, v.bill, M(0,hy-.03,hz+.19+bl/2, Math.PI/2,0,0, .065,bl,.05));
+  if(v.knob) h(G.ico1, v.knob, M(0,hy+.07,hz+.17, 0,0,0, .065*(v.knobS||1)));
+  if(v.dewlap) h(G.ico1, v.dewlap, M(0,hy-.16,hz+.05, 0,0,0, .08,.12,.1));
+  if(v.chin) [-1,1].forEach(d=>h(G.ico1, v.chin, M(d*.1,hy-.02,hz+.02, 0,0,0, .07,.075,.1)));
+  if(v.crest) h(G.ico1, v.head, M(0,hy+.14,hz-.06, .5,0,0, .07,.09,.1));
+  if(v.hen){ [0,1,2].forEach(k=>h(G.ico0, 0xD8262B, M(0,hy+.14+(k===1?.03:0),hz-.04+k*.07, 0,0,0, .05))); h(G.ico1, 0xD8262B, M(0,hy-.14,hz+.14, 0,0,0, .04,.07,.04)); }
+  // eyes with a highlight: the cute part
+  [-1,1].forEach(d=>{ h(G.ico1, 0x141414, M(d*.125,hy+.04,hz+.07, 0,0,0, .038)); h(G.ico0, 0xFFFFFF, M(d*.15,hy+.06,hz+.1, 0,0,0, .014)); });
+  // wings: extend along +x from the shoulder pivot; folded back by the animation
+  const wing = (arr, d) => { arr.push(part(G.ico1, v.wing, M(d*.5,0,0, 0,0,0, .56,.07,.27))); arr.push(part(G.ico1, v.tip, M(d*.95,-.01,-.02, 0,0,0, .22,.05,.16))); };
+  wing(WL, 1); wing(WR, -1);
+  const out = { body:merge(B), head:merge(H), wingL:merge(WL), wingR:merge(WR), s };
+  [out.body,out.head,out.wingL,out.wingR].forEach(g=>{ g.scale(s,s,s); g.computeBoundingSphere(); });
+  out.neck = [0,.36*s,.55*s]; out.wing = [.34*s,.3*s,.12*s];
+  return out;
+}
+
+/* ============================ SCENE ============================ */
+function noGL(){
+  $("help").hidden = true; $("labels").hidden = true;
+  const d = document.createElement("div"); d.className = "nogl panel";
+  d.innerHTML = `<div class="mark">3D view unavailable</div><p>This browser couldn't start the 3D lake. Every flock's records are still in the field guide.</p>`;
+  document.body.appendChild(d); toggleGuide(true);
+}
+const LIGHTS = {
+  morning:  {label:"morning", dir:[.72,.34,-.42], sun:0xFFE2BC, int:1.45, zen:0x7DB4E4, hor:0xF4E6D2, hemiSky:0xBFD6F5, hemiGround:0x5E6E3E, hemiI:.5},
+  afternoon:{label:"afternoon", dir:[-.45,.62,-.64], sun:0xFFF0D6, int:1.6, zen:0x5C9FDB, hor:0xD4EAF4, hemiSky:0xB9D3F2, hemiGround:0x55703A, hemiI:.52},
+  golden:   {label:"golden hour", dir:[-.62,.2,-.76], sun:0xFFA75A, int:1.7, zen:0x6A8CC6, hor:0xF7C28E, hemiSky:0xE8C49E, hemiGround:0x5A5638, hemiI:.42}
+};
+const LORDER = ["morning","afternoon","golden"];
+let lightKey = "afternoon", lightBefore = "afternoon";
+const LS = { dir:new THREE.Vector3(), sun:new THREE.Color(), zen:new THREE.Color(), hor:new THREE.Color(), hs:new THREE.Color(), hg:new THREE.Color(), int:2.4, hi:.8 };
+const LT = { dir:new THREE.Vector3(), sun:new THREE.Color(), zen:new THREE.Color(), hor:new THREE.Color(), hs:new THREE.Color(), hg:new THREE.Color(), int:2.4, hi:.8 };
+function lightTarget(k){ const L = LIGHTS[k]; LT.dir.set(...L.dir).normalize(); LT.sun.set(L.sun); LT.zen.set(L.zen); LT.hor.set(L.hor); LT.hs.set(L.hemiSky); LT.hg.set(L.hemiGround); LT.int = L.int; LT.hi = L.hemiI; }
+function setLight(k){ lightKey = k; lightTarget(k); $("btnLight").textContent = "Light: " + LIGHTS[k].label; }
+$("btnLight").onclick = ()=>{ lightBefore = LORDER[(LORDER.indexOf(lightKey)+1)%3]; setLight(lightBefore); };
+
+function start(){
+  if(!window.THREE){ noGL(); return; }
+  try{ renderer = new THREE.WebGLRenderer({antialias:true}); }catch(e){ noGL(); return; }
+  if(!renderer.getContext()){ noGL(); return; }
+  const stage = $("stage");
+  renderer.setPixelRatio(Math.min(1.5, devicePixelRatio||1));
+  renderer.setSize(stage.clientWidth, stage.clientHeight);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = .95;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  stage.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(34, stage.clientWidth/stage.clientHeight, .5, 1200);
+  hemi = new THREE.HemisphereLight(0xffffff, 0x6E8A4A, .8); scene.add(hemi);
+  sun = new THREE.DirectionalLight(0xffffff, 2.4); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048,2048);
+  Object.assign(sun.shadow.camera, {left:-58,right:58,top:58,bottom:-58,near:1,far:260});
+  sun.shadow.bias = -.0004; sun.shadow.normalBias = .02;
+  scene.add(sun, sun.target);
+  lightTarget("afternoon"); ["dir","sun","zen","hor","hs","hg"].forEach(k=>LS[k].copy(LT[k])); LS.int = LT.int; LS.hi = LT.hi;
+  scene.fog = new THREE.Fog(0xD4EAF4, 160, 420);
+
+  buildSky(); buildTerrain(); buildScenery(); buildWater();
+  staticMesh = new THREE.Mesh(merge(ST), new THREE.MeshStandardMaterial({vertexColors:true, flatShading:true, roughness:.86, metalness:0}));
+  staticMesh.castShadow = true; staticMesh.receiveShadow = true; scene.add(staticMesh);
+  buildAnimals(); buildLife(); buildEggs();
+  bindInput(); resetView(true);
+  addEventListener("resize", ()=>{ renderer.setSize(stage.clientWidth, stage.clientHeight); camera.aspect = stage.clientWidth/stage.clientHeight; camera.updateProjectionMatrix(); });
+
+  let last = performance.now(), probeT = 0, probeN = 0, probing = true;
+  (function loop(now){
+    const raw = (now-last)/1000, dt = Math.min(.05, raw); last = now;
+    if(probing && now > 1800){ probeT += raw; probeN++; if(probeT > 3){ probing = false; if(probeN/probeT < 38 && quality==="high") setQuality("low"); } }
+    tick(dt, now/1000); renderer.render(scene, camera); requestAnimationFrame(loop);
+  })(last);
+}
+
+/* ---------- sky dome with sun glow ---------- */
+function buildSky(){
+  sky = new THREE.Mesh(new THREE.SphereGeometry(600, 32, 16), new THREE.ShaderMaterial({
+    side:THREE.BackSide, depthWrite:false, fog:false,
+    uniforms:{ uZen:{value:new THREE.Color()}, uHor:{value:new THREE.Color()}, uSun:{value:new THREE.Vector3()}, uSunC:{value:new THREE.Color()} },
+    vertexShader:`varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+    fragmentShader:`uniform vec3 uZen,uHor,uSun,uSunC; varying vec3 vD;
+      void main(){ vec3 d = normalize(vD); float h = max(d.y,0.);
+        vec3 c = mix(uHor, uZen, pow(h,.5));
+        float s = max(dot(d, normalize(uSun)), 0.);
+        c += uSunC*(pow(s,6.)*.22 + pow(s,60.)*.35) + vec3(1.,.97,.9)*smoothstep(.9965,.9985,s);
+        c = mix(c, uHor*.92, clamp(-d.y*4.,0.,1.));
+        gl_FragColor = vec4(c,1.); }`
+  }));
+  sky.renderOrder = -1; scene.add(sky);
+  // low-poly clouds
+  clouds = [];
+  for(let i=0;i<8;i++){
+    const parts = [];
+    for(let k=0;k<5;k++) parts.push(part(G.ico1, 0xFFFFFF, M(k*3.2 - 6 + (hash(i,k)-.5)*2, (hash(k,i)-.3)*1.8, (hash(i*3,k)-.5)*3, 0,hash(i,k)*3,0, 2.4+hash(k,i*2)*2, 1.6+hash(i,k*5), 2.2+hash(k*3,i)*1.5)));
+    const c = new THREE.Mesh(merge(parts), new THREE.MeshLambertMaterial({vertexColors:true, emissive:0x9098A8, emissiveIntensity:.35}));
+    c.position.set(-160 + i*42 + hash(i,1)*20, 52 + hash(i,2)*18, -110 + hash(i,3)*170);
+    c.userData.v = 1.2 + hash(i,4)*1.4; scene.add(c); clouds.push(c);
+  }
+}
+let clouds = [];
+
+/* ---------- terrain: flat-shaded faces, coloured per face ---------- */
+function buildTerrain(){
+  let g = new THREE.PlaneGeometry(220, 220, 110, 110); g.rotateX(-Math.PI/2);
+  const p = g.attributes.position;
+  for(let i=0;i<p.count;i++){ const x = p.getX(i), z = p.getZ(i); p.setY(i, heightAt(x,z) + (ellN(x,z) > 1.3 ? (hash(x,z)-.5)*.15 : 0)); }
+  g = g.toNonIndexed(); g.deleteAttribute("uv"); g.computeVertexNormals();
+  const P = g.attributes.position.array, C = new Float32Array(P.length);
+  const grass = [0x8DC255,0x80B84B,0x97CB5E,0x78AF45,0x9ACD62].map(lin), sand = lin(0xE2D2A2), bedS = lin(0xB9AE84), bedD = lin(0x6F7A58), tmp = new THREE.Color();
+  for(let t=0;t<P.length;t+=9){
+    const cx = (P[t]+P[t+3]+P[t+6])/3, cy = (P[t+1]+P[t+4]+P[t+7])/3, cz = (P[t+2]+P[t+5]+P[t+8])/3, e = ellN(cx,cz), hsh = hash(cx*1.7, cz*1.3);
+    const onIsland = Math.hypot(cx-IS.x, cz-IS.z) < IS.r;
+    if(cy < -.05) tmp.copy(bedS).lerp(bedD, Math.min(1, -cy/1.6));
+    else if((e < 1.075 && !onIsland) || (onIsland && cy < .32)) tmp.copy(sand).multiplyScalar(.96 + hsh*.08);
+    else { tmp.copy(grass[Math.floor(hsh*grass.length)]); if(cy > 1.2) tmp.lerp(lin(0xB5C766), Math.min(.35,(cy-1.2)*.2)); }
+    for(let v=0;v<3;v++){ C[t+v*3]=tmp.r; C[t+v*3+1]=tmp.g; C[t+v*3+2]=tmp.b; }
+  }
+  g.setAttribute("color", new THREE.BufferAttribute(C,3));
+  const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({vertexColors:true, flatShading:true, roughness:.95, metalness:0}));
+  m.receiveShadow = true; scene.add(m);
+}
+
+/* ---------- farm scenery (all merged) ---------- */
+const clickables = [];
+let windmillBlades, funicular, funRail;
+function tree(x,z,s){
+  const y = heightAt(x,z);
+  if(hash(x,z) > .72){ add(G.cyl6, 0x6B4A30, M(x,y+.6*s,z, 0,0,0, .18*s,1.2*s,.18*s)); [0,1,2].forEach(k=>add(G.cone6, k%2?0x3E7D3A:0x4A8C41, M(x,y+(1.6+k*.9)*s,z, 0,hash(k,x),0, (1.5-k*.35)*s,1.7*s,(1.5-k*.35)*s))); return; }
+  add(G.cyl6, 0x7A5638, M(x,y+.7*s,z, 0,0,0, .2*s,1.4*s,.2*s));
+  const cols = [0x6DAE45,0x5E9E3E,0x7FBA4F,0x8CC45A];
+  add(G.ico1, cols[Math.floor(hash(z,x)*4)], M(x,y+2*s,z, hash(x,1),hash(z,2),0, 1.45*s,1.25*s,1.45*s));
+  add(G.ico1, cols[Math.floor(hash(x+3,z)*4)], M(x+.6*s,y+2.7*s,z-.3*s, 0,hash(x,z)*3,0, .9*s));
+}
+function buildScenery(){
+  const hy = (x,z) => heightAt(x,z);
+  // red barn
+  const bx = -12, bz = -33, by = hy(bx,bz);
+  add(G.box, 0xB8412F, M(bx,by+2.1,bz, 0,.18,0, 8,4.2,6));
+  add(G.box, 0xB8412F, M(bx,by+4.2,bz, Math.PI/4,.18,0, 7.9,2.9,2.9));
+  // gable roof planes
+  [-1,1].forEach(d=>{ const ox = Math.sin(.18)*d*1.12, oz = Math.cos(.18)*d*1.12; add(G.box, 0x4E534C, M(bx+ox, by+5.2, bz+oz, d*.72,.18,0, 8.6,.22,3.4)); });
+  add(G.box, 0xF4F1EA, M(bx+Math.sin(.18)*3.02,by+1.5,bz+Math.cos(.18)*3.02, 0,.18,0, 2.6,3,.1));
+  [-1,1].forEach(d=>add(G.box, 0xB8412F, M(bx+Math.sin(.18)*3.08,by+1.5,bz+Math.cos(.18)*3.08, 0,.18,d*.86, .16,3.4,.08)));
+  add(G.box, 0xF4F1EA, M(bx+Math.sin(.18)*3.03,by+3.3,bz+Math.cos(.18)*3.03, 0,.18,0, 1.2,.9,.1));
+  // silo
+  add(G.cyl8, 0xA9B7BF, M(bx+6.2,by+4,bz-1, 0,0,0, 1.7,8,1.7)); add(G.ico1, 0x7C8A91, M(bx+6.2,by+8,bz-1, 0,0,0, 1.75,1,1.75));
+  for(let y=1; y<8; y+=1.6) add(G.cyl8, 0x93A1A9, M(bx+6.2,by+y,bz-1, 0,0,0, 1.74,.08,1.74));
+  // windmill (blades animated)
+  const wx = 20, wz = -30, wy = hy(wx,wz);
+  add(new THREE.CylinderGeometry(.45,1.1,9,6), 0xE2DACB, M(wx,wy+4.5,wz)); add(G.box, 0x8E3B2C, M(wx,wy+9.2,wz, 0,0,0, 1.4,1.1,1.6));
+  windmillBlades = new THREE.Group(); windmillBlades.position.set(wx, wy+9.2, wz+.95);
+  const bm = new THREE.MeshStandardMaterial({color:lin(0xF1ECE2), flatShading:true, roughness:.8});
+  for(let k=0;k<4;k++){ const bl = new THREE.Mesh(G.box, bm); bl.scale.set(.5,4.2,.08); bl.position.set(Math.sin(k*Math.PI/2)*2.2, Math.cos(k*Math.PI/2)*2.2, 0); bl.rotation.z = -k*Math.PI/2; bl.castShadow = true; windmillBlades.add(bl); }
+  scene.add(windmillBlades);
+  // goose houses along the north shore
+  [[-3,-24.8,.1],[3.5,-25,-.12],[10,-24.2,-.3]].forEach(([x,z,r])=>{
+    const y = hy(x,z);
+    add(G.box, 0xB88A58, M(x,y+.2,z, 0,r,0, 2.6,.4,2.2));
+    [-1,1].forEach(d=>add(G.box, 0xC89B6A, M(x+Math.cos(r)*d*.62,y+1.1,z-Math.sin(r)*d*.62, 0,r,d*.72, .12,2.2,2.3)));
+    add(G.box, 0x3B2A1E, M(x+Math.sin(r)*1.05,y+.7,z+Math.cos(r)*1.05, 0,r,0, .8,.9,.06));
+  });
+  // hen yard fence
+  const fence = (x0,z0,x1,z1) => { const L = Math.hypot(x1-x0,z1-z0), n = Math.ceil(L/2.2), a = Math.atan2(x1-x0, z1-z0);
+    for(let i=0;i<=n;i++){ const x = x0+(x1-x0)*i/n, z = z0+(z1-z0)*i/n; add(G.box, 0xE9E1D1, M(x,hy(x,z)+.55,z, 0,a,0, .16,1.1,.16)); }
+    [.45,.85].forEach(h=>{ const mx = (x0+x1)/2, mz = (z0+z1)/2; add(G.box, 0xE9E1D1, M(mx,hy(mx,mz)+h,mz, 0,a,0, .08,.1,L)); }); };
+  fence(-22,-27,-22,-36); fence(-22,-36,-16.5,-37); fence(-22,-27,-17,-27.5);
+  // hay bales
+  [[-17.5,-29],[-16,-30.5],[-18.5,-31.2],[25,-22],[26.5,-23.5]].forEach(([x,z],i)=>add(G.cyl8, 0xE0BF62, M(x,hy(x,z)+.6,z, 0,i,Math.PI/2, .65,1.2,.65)));
+  // dock and rowboat
+  const dz0 = 21.5, dz1 = 14.5, dx = 9;
+  for(let z=dz1; z<=dz0; z+=.55) add(G.box, 0xA27B52, M(dx,.34,z, 0,0,0, 2.2,.12,.48));
+  for(let z=dz1; z<=dz0; z+=2.3) [-1,1].forEach(d=>add(G.cyl6, 0x7A5A3C, M(dx+d*1.05,-.4,z, 0,0,0, .12,1.8,.12)));
+  add(G.box, 0x3E6E8E, M(11.6,.12,16, 0,.4,0, 1.1,.4,2.8)); add(G.cone5, 0x3E6E8E, M(12.12,.12,17.3, Math.PI/2,.4,0, .55,.9,.2));
+  add(G.box, 0xE9E1D1, M(11.6,.34,16, 0,.4,0, 1,.06,.3));
+  // island: the knoll, with its bench, lamp and tiny funicular
+  const iy = hy(IS.x, IS.z);
+  add(G.box, 0x8A5A3B, M(IS.x,iy+.45,IS.z+.6, 0,0,0, 1.9,.1,.5)); add(G.box, 0x8A5A3B, M(IS.x,iy+.8,IS.z+.36, -.2,0,0, 1.9,.5,.08));
+  [-.8,.8].forEach(d=>add(G.box, 0x3A3F44, M(IS.x+d,iy+.22,IS.z+.6, 0,0,0, .08,.45,.45)));
+  add(G.cyl6, 0x3A3F44, M(IS.x-1.4,iy+1.3,IS.z+.4, 0,0,0, .06,2.6,.06)); add(G.box, 0xF6E7B0, M(IS.x-1.4,iy+2.65,IS.z+.4, 0,0,0, .3,.2,.3));
+  tree(IS.x-1.8, IS.z-1.6, .75); tree(IS.x+1.9, IS.z-2, .6);
+  funRail = { a:new THREE.Vector3(IS.x+4.1, .15, IS.z-1.2), b:new THREE.Vector3(IS.x+1.1, iy+.05, IS.z-1.2) };
+  const rl = funRail.a.distanceTo(funRail.b), ra = Math.atan2(funRail.b.y-funRail.a.y, funRail.a.x-funRail.b.x);
+  [-.2,.2].forEach(d=>add(G.box, 0x4A3A30, M((funRail.a.x+funRail.b.x)/2, (funRail.a.y+funRail.b.y)/2+.08, funRail.a.z+d, 0,0,-ra, rl,.07,.07)));
+  add(G.box, 0xE0692B, M(funRail.b.x-.2, funRail.b.y+.55, funRail.b.z, 0,0,0, .7,.08,.8));
+  // trees around the farm
+  for(let i=0;i<70;i++){
+    const a = rnd()*Math.PI*2, r = 1.28 + rnd()*1.1, x = Math.cos(a)*LR.x*r, z = Math.sin(a)*LR.z*r*1.25;
+    if(Math.abs(x) > 104 || Math.abs(z) > 104) continue;
+    if(Math.hypot(x+12,z+33) < 9 || Math.hypot(x-20,z+30) < 4 || Math.hypot(x+19,z+32) < 7 || (x > 4 && x < 14 && z > 19 && z < 30) || (z < -21 && z > -28 && x > -6 && x < 13)) continue;
+    tree(x, z, .8 + rnd()*.6);
+  }
+  // reeds and cattails on the shore
+  for(let c=0;c<30;c++){
+    const a = rnd()*Math.PI*2; if(Math.abs(Math.cos(a)*LR.x - 9) < 4 && Math.sin(a) > 0) continue;
+    const r = shapeR(a)*(.95 + rnd()*.05), cx = Math.cos(a)*LR.x*r, cz = Math.sin(a)*LR.z*r;
+    for(let k=0;k<9;k++){ const x = cx + (rnd()-.5)*2, z = cz + (rnd()-.5)*1.6, hgt = 1 + rnd()*1.2, lean = (rnd()-.5)*.25;
+      add(G.cyl4, k%3?0x6E9B3F:0x7FAE4B, M(x,hgt/2-.1,z, lean,0,lean, .035,hgt,.035));
+      if(k%3===0) add(G.cyl6, 0x6B4A2C, M(x+lean*hgt*.5,hgt-.05,z-lean*hgt*.5, lean,0,lean, .07,.35,.07)); }
+  }
+  // lily pads and a few blossoms
+  for(let i=0;i<46;i++){
+    const a = rnd()*Math.PI*2, r = .5 + rnd()*.42, x = Math.cos(a)*LR.x*r*shapeR(a), z = Math.sin(a)*LR.z*r*shapeR(a);
+    if(Math.hypot(x-IS.x,z-IS.z) < IS.r + 1) continue;
+    add(G.cyl8, i%2?0x4F8F3C:0x5E9E45, M(x,.035,z, 0,rnd()*6,0, .45+rnd()*.3,.03,.45+rnd()*.3));
+    if(i%5===0){ add(G.ico0, 0xF4B6C8, M(x,.16,z, 0,0,0, .14,.1,.14)); add(G.ico0, 0xFFE58A, M(x,.2,z, 0,0,0, .05)); }
+  }
+  // wildflowers and rocks
+  const fc = [0xFFFFFF,0xFFE066,0xF4A6C0,0xB79CE6,0xFF9E6B];
+  for(let i=0;i<260;i++){ const a = rnd()*Math.PI*2, r = 1.12 + rnd()*.9, x = Math.cos(a)*LR.x*r, z = Math.sin(a)*LR.z*r*1.2; if(Math.abs(x)>100||Math.abs(z)>100) continue; add(G.ico0, fc[i%5], M(x,heightAt(x,z)+.18,z, 0,0,0, .1)); add(G.cyl4, 0x5E9E3E, M(x,heightAt(x,z)+.07,z, 0,0,0, .02,.16,.02)); }
+  for(let i=0;i<24;i++){ const a = rnd()*Math.PI*2, r = .99 + rnd()*.08, x = Math.cos(a)*LR.x*r*shapeR(a), z = Math.sin(a)*LR.z*r*shapeR(a); add(G.ico0, i%2?0x9C9A92:0xB3B0A6, M(x,heightAt(x,z)+.1,z, rnd(),rnd()*3,0, .5+rnd()*.5,.35+rnd()*.3,.5+rnd()*.5)); }
+  // heron in the reeds
+  const hx = -27.5, hz = 6;
+  add(G.ico1, 0x9AA4AE, M(hx,.9,hz, 0,1.2,0, .3,.32,.62)); add(G.cyl6, 0xB9C2CA, M(hx+.2,1.45,hz+.35, -.3,1.2,0, .07,.9,.07));
+  add(G.ico1, 0xDCE2E6, M(hx+.35,1.95,hz+.55, 0,1.2,0, .13,.12,.2)); add(G.cone6, 0xE6B84A, M(hx+.62,1.93,hz+.66, Math.PI/2,1.2,0, .04,.45,.03));
+  [-.08,.08].forEach(d=>add(G.cyl4, 0x5B4B3A, M(hx+d,.3,hz, 0,0,0, .025,.9,.025)));
+  // signboard at the dock
+  const sc = document.createElement("canvas"); sc.width = 512; sc.height = 160; const sg = sc.getContext("2d");
+  sg.fillStyle = "#F4F1EA"; sg.fillRect(0,0,512,160); sg.strokeStyle = "#3B2A1E"; sg.lineWidth = 10; sg.strokeRect(5,5,502,150);
+  sg.fillStyle = "#1F2421"; sg.font = '700 56px "Source Serif 4", Georgia, serif'; sg.textAlign = "center"; sg.fillText("Goose Lake", 256, 78);
+  sg.font = '600 24px "IBM Plex Sans", sans-serif'; sg.fillText("RECORDS OF PARCEL Y-1 · FEED THE CURIOUS", 256, 122);
+  const tex = new THREE.CanvasTexture(sc); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 4;
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.4,1.06), new THREE.MeshStandardMaterial({map:tex, roughness:.9}));
+  sign.position.set(5.2, heightAt(5.2,23.2)+1.6, 23.2); sign.rotation.y = .35; sign.castShadow = true; scene.add(sign);
+  [-1.4,1.4].forEach(d=>add(G.box, 0x6B4A30, M(5.2+d*Math.cos(.35),heightAt(5.2,23.2)+.8,23.2-d*Math.sin(.35), 0,.35,0, .14,1.8,.14)));
+}
+
+/* ---------- water: one shader does colour depth, glints, foam and every ripple ---------- */
+const MAXR = 64;
+function buildWater(){
+  const rip = []; for(let i=0;i<MAXR;i++) rip.push(new THREE.Vector4(0,0,0,0));
+  water = new THREE.Mesh(new THREE.PlaneGeometry(LR.x*2.3, LR.z*2.3), new THREE.ShaderMaterial({
+    transparent:true, depthWrite:false, fog:false,
+    uniforms:{ uT:{value:0}, uSun:{value:new THREE.Vector3()}, uSunC:{value:new THREE.Color()}, uSky:{value:new THREE.Color()},
+      uDeep:{value:new THREE.Color(0x236C8F)}, uShallow:{value:new THREE.Color(0x5DB7AE)}, uR:{value:new THREE.Vector2(LR.x,LR.z)},
+      uRip:{value:rip}, uCam:{value:new THREE.Vector3()}, uIs:{value:new THREE.Vector3(IS.x,IS.z,IS.r)} },
+    vertexShader:`varying vec3 vW; void main(){ vec4 w = modelMatrix*vec4(position,1.); vW = w.xyz; gl_Position = projectionMatrix*viewMatrix*w; }`,
+    fragmentShader:`
+      uniform float uT; uniform vec3 uSun, uSunC, uSky, uDeep, uShallow, uCam, uIs; uniform vec2 uR; uniform vec4 uRip[${MAXR}];
+      varying vec3 vW;
+      float shapeR(float th){ return 1.0 + .07*sin(3.0*th + .5) + .04*cos(5.0*th); }
+      void main(){
+        vec2 p = vW.xz; float th = atan(p.y, p.x); float e = length(p/uR)/shapeR(th);
+        if(e > 1.004) discard;
+        vec3 n = vec3(0.,1.,0.);
+        n.x += .022*sin(p.x*1.3 + uT*1.1) + .016*sin(p.y*2.3 - uT*1.7 + p.x*.6) + .012*sin(p.x*5.1 + p.y*3.7 + uT*2.6);
+        n.z += .022*cos(p.y*1.1 + uT*1.3) + .016*cos(p.x*1.9 + uT*1.5 - p.y*.4) + .012*cos(p.y*4.7 - p.x*3.1 + uT*2.2);
+        float ring = 0.;
+        for(int i=0;i<${MAXR};i++){
+          vec4 r = uRip[i]; if(r.z <= 0.) continue;
+          vec2 d = p - r.xy; float L = length(d); if(L > 3.2) continue;
+          float a = exp(-L*1.35)*r.z; float w = cos(L*8.5 - uT*5.5 + r.w);
+          n.xz += (d/(L+.001))*w*a*.3; ring += max(w,0.)*a;
+        }
+        n = normalize(n);
+        vec3 V = normalize(uCam - vW), L = normalize(uSun);
+        float fres = pow(1. - max(dot(n,V),0.), 3.);
+        float shallow = smoothstep(.62, .99, e);
+        float isl = 1. - smoothstep(uIs.z*.9, uIs.z*1.35, length(p - uIs.xy));
+        shallow = max(shallow, isl);
+        vec3 col = mix(uDeep, uShallow, shallow);
+        col = mix(col, uSky, fres*.38);
+        float sp = max(dot(reflect(-L,n), V), 0.);
+        col += uSunC*(pow(sp,220.)*2.4 + pow(sp,30.)*.06);
+        col += vec3(ring*.06);
+        float foam = smoothstep(.972, 1.0, e)*(.55 + .45*sin(th*46. + uT*1.8)) + isl*smoothstep(.2,.9,isl)*(.4+.4*sin(atan(p.y-uIs.y,p.x-uIs.x)*30.+uT*2.));
+        col = mix(col, vec3(.97,.98,.96), clamp(foam,0.,1.)*.6);
+        float alpha = mix(.93, .72, shallow) + pow(sp,220.)*.5 + foam*.3;
+        gl_FragColor = vec4(col, clamp(alpha,0.,1.));
+      }`
+  }));
+  water.rotation.x = -Math.PI/2; water.renderOrder = 2; scene.add(water);
+}
+
+/* ---------- animals: instanced per breed and per body part ---------- */
+const matAnimal = () => new THREE.MeshStandardMaterial({vertexColors:true, flatShading:true, roughness:.72, metalness:0});
+const VM = {};        // variant -> {geo, meshes[4], used}
+const geese = [];     // every goose
+const hens = [];
+function variantMesh(key, count){
+  const geo = gooseGeo(VAR[key]), mat = matAnimal();
+  const meshes = ["body","head","wingL","wingR"].map(p=>{ const m = new THREE.InstancedMesh(geo[p], mat, count); m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; m.userData.variant = key; scene.add(m); return m; });
+  VM[key] = { geo, meshes, used:0, owners:[] };
+}
+function buildAnimals(){
+  const counts = {};
+  FLOCKS.forEach(f=>f.geese.forEach(([k,n])=>counts[k] = (counts[k]||0) + n));
+  counts.hen = 5;
+  Object.keys(counts).forEach(k=>variantMesh(k, counts[k]));
+  FLOCKS.forEach((f,fi)=>{
+    const a = -Math.PI/2 + .32 + fi*Math.PI*2/FLOCKS.length, r = .64*shapeR(a);
+    f.anchor = { x:Math.cos(a)*LR.x*r, z:Math.sin(a)*LR.z*r };
+    f.t = hash(fi,9)*20; f.w = .045 + hash(fi,4)*.03; f.center = {x:f.anchor.x, z:f.anchor.z}; f.heading = 0; f.members = [];
+    f.mode = "swim"; f.mt = 0; f.nextFly = 25 + hash(fi,8)*15;
+    let k = 0;
+    f.geese.forEach(([key,n])=>{ for(let i=0;i<n;i++){
+      const vm = VM[key], iid = vm.used++;
+      const ang = k*2.399, rad = .9 + Math.sqrt(k)*.9;
+      const g = { flock:fi, key, iid, s:vm.geo.s, gosling:key==="gosling",
+        off:{x:Math.cos(ang)*rad*.9, z:Math.sin(ang)*rad*.7 - k*.12},
+        x:f.anchor.x + Math.cos(ang)*rad, y:0, z:f.anchor.z + Math.sin(ang)*rad, yaw:hash(k,fi)*6, ph:hash(fi,k)*9,
+        hp:0, hy:0, dab:0, dabT:4 + hash(k,fi*3)*10, flap:0, spread:0, pitch:0, fx:0, fy:0, fz:0 };
+      vm.owners[iid] = g; geese.push(g); f.members.push(g); k++;
+    }});
+  });
+  for(let i=0;i<5;i++){ const vm = VM.hen, iid = vm.used++; const h = { key:"hen", iid, s:vm.geo.s, x:-19 + hash(i,1)*3, z:-31 + hash(i,2)*4, yaw:hash(i,3)*6, hp:0, hy:0, ph:hash(i,4)*9, tx:0, tz:0, wait:0, flap:0, spread:0, pitch:0 };
+    h.tx = h.x; h.tz = h.z; vm.owners[iid] = h; hens.push(h); }
+}
+
+/* ---------- birds, fish, butterflies ---------- */
+let birdMeshes, fishMesh, flyMesh; const birds = [], fish = [], flies = [];
+let splash = { x:0, z:0, s:0, w:0 };
+function buildLife(){
+  // songbirds
+  const bm = matAnimal();
+  const bBody = merge([part(G.ico1, 0x4A4F5A, M(0,0,0, 0,0,0, .09,.08,.22)), part(G.ico1, 0xE8DCC8, M(0,-.03,.04, 0,0,0, .07,.05,.14)), part(G.cone5, 0xE0A040, M(0,0,.25, Math.PI/2,0,0, .025,.07,.02))]);
+  const bWing = d => merge([part(G.ico1, 0x3C414C, M(d*.2,0,0, 0,0,0, .2,.015,.08))]);
+  birdMeshes = [bBody, bWing(1), bWing(-1)].map(g=>{ const m = new THREE.InstancedMesh(g, bm, 14); m.frustumCulled = false; m.castShadow = true; scene.add(m); return m; });
+  for(let i=0;i<14;i++) birds.push({ r:18 + hash(i,1)*30, h:9 + hash(i,2)*14, w:(.18 + hash(i,3)*.18)*(i%3?1:-1), a:hash(i,4)*6.3, ph:hash(i,5)*9, cx:(hash(i,6)-.5)*20, cz:(hash(i,7)-.5)*14 });
+  // koi
+  const fGeo = merge([part(G.ico1, 0xFFFFFF, M(0,0,0, 0,0,0, .12,.13,.36)), part(G.cone5, 0xFFFFFF, M(0,0,-.4, -Math.PI/2,0,0, .14,.24,.04))]);
+  fishMesh = new THREE.InstancedMesh(fGeo, new THREE.MeshStandardMaterial({vertexColors:true, flatShading:true, roughness:.45, metalness:.1}), 30); fishMesh.frustumCulled = false; scene.add(fishMesh);
+  const koi = [0xF08A3C,0xF4C542,0xF2F0EA,0xE8663A,0xF7B267].map(lin);
+  for(let i=0;i<30;i++){
+    let cx, cz, tries = 0;
+    do { const a = hash(i,tries)*6.3, r = .2 + hash(tries,i)*.6; cx = Math.cos(a)*LR.x*r; cz = Math.sin(a)*LR.z*r; tries++; } while(Math.hypot(cx-IS.x,cz-IS.z) < IS.r + 4 && tries < 20);
+    fish.push({ cx, cz, r:1.5 + hash(i,2)*3.5, w:(.25 + hash(i,3)*.35)*(i%2?1:-1), a:hash(i,4)*6.3, d:-.35 - hash(i,5)*.7, ph:hash(i,6)*9, jump:-1 });
+    fishMesh.setColorAt(i, koi[i%koi.length]);
+  }
+  fishMesh.instanceColor.needsUpdate = true;
+  // butterflies near the flowers
+  const wGeo = new THREE.PlaneGeometry(.34,.24); wGeo.translate(.17,0,0);
+  const bfly = merge([part(wGeo, 0xFFFFFF, M(0,0,0, -Math.PI/2,0,0)), part(wGeo, 0xFFFFFF, M(0,0,0, -Math.PI/2,Math.PI,0))]);
+  flyMesh = new THREE.InstancedMesh(bfly, new THREE.MeshLambertMaterial({vertexColors:true, side:THREE.DoubleSide}), 12); flyMesh.frustumCulled = false; scene.add(flyMesh);
+  const fcs = [0xFFD166,0xF6F6F6,0x9BD1F2,0xF4A6C0].map(lin);
+  for(let i=0;i<12;i++){ const a = hash(i,8)*6.3, r = 1.18 + hash(i,9)*.35; flies.push({ cx:Math.cos(a)*LR.x*r, cz:Math.sin(a)*LR.z*r, ph:hash(i,1)*9, r:1 + hash(i,2)*2 }); flyMesh.setColorAt(i, fcs[i%4]); }
+  flyMesh.instanceColor.needsUpdate = true;
+}
+
+/* ---------- easter eggs: the bench, the tiny funicular, the golden egg ---------- */
+let goldenEgg, funT = 0, funDir = 0;
+function hitbox(x,y,z,w,h,d,id){ const m = new THREE.Mesh(G.box, new THREE.MeshBasicMaterial({transparent:true, opacity:0, depthWrite:false})); m.position.set(x,y,z); m.scale.set(w,h,d); m.userData.egg = id; scene.add(m); clickables.push(m); }
+function buildEggs(){
+  const iy = heightAt(IS.x, IS.z);
+  hitbox(IS.x, iy+.6, IS.z+.5, 2.4, 1.4, 1.4, "bench");
+  funicular = new THREE.Mesh(merge([part(G.box, 0xE0692B, M(0,.35,0, 0,0,0, .9,.7,.6)), part(G.box, 0x1F2421, M(0,.74,0, 0,0,0, .95,.1,.65)), part(G.box, 0xF4E3C1, M(0,.45,.31, 0,0,0, .7,.25,.02)), part(G.box, 0xF4E3C1, M(0,.45,-.31, 0,0,0, .7,.25,.02))]), matAnimal());
+  funicular.castShadow = true; funicular.userData.egg = "funicular"; scene.add(funicular); clickables.push(funicular);
+  const gx = 3.5 + Math.sin(-.12)*1.35, gz = -25 + Math.cos(-.12)*1.35;
+  goldenEgg = new THREE.Mesh(G.ico1, new THREE.MeshStandardMaterial({color:lin(0xF2C14E), metalness:.75, roughness:.22, emissive:lin(0x6B4A10), emissiveIntensity:.4}));
+  goldenEgg.scale.set(.2,.27,.2); goldenEgg.position.set(gx, heightAt(gx,gz)+.3, gz); goldenEgg.castShadow = true; goldenEgg.userData.egg = "egg"; scene.add(goldenEgg); clickables.push(goldenEgg);
+  const nest = new THREE.Mesh(new THREE.TorusGeometry(.32,.1,5,10), new THREE.MeshStandardMaterial({color:lin(0xD9B45A), flatShading:true, roughness:1}));
+  nest.rotation.x = -Math.PI/2; nest.position.set(gx, heightAt(gx,gz)+.1, gz); nest.receiveShadow = true; scene.add(nest);
+}
+function triggerEgg(id){
+  if(id==="bench"){
+    lightBefore = lightKey; setLight("golden");
+    focusOn(IS.x, heightAt(IS.x,IS.z), IS.z, 20, .32, Math.PI*.02);
+    showEgg("bench", `<div class="mark">Easter egg · the knoll</div><h2>The bench</h2>
+      <p>In <em>(500) Days of Summer</em> (2009), a bench on the real Angels Knoll looked out over downtown, and the buildings in that view became part of the story. The park later closed. This little island keeps a bench for it, and the sun is going down.</p>`);
+  } else if(id==="funicular"){
+    funDir = funT < .5 ? 1 : -1;
+    showEgg("funicular", `<div class="mark">Easter egg · the knoll</div><h2>A very small Angels Flight</h2>
+      <p>The real Angels Flight runs two counterbalanced cars, Sinai and Olivet, along the site's north edge. This one is a single car and has only geese for passengers.</p>`);
+  } else if(id==="egg"){
+    goldenEgg.userData.spin = 2.5;
+    showEgg("egg", `<div class="mark">Easter egg · the goose house</div><h2>The golden egg</h2>
+      <p>Everyone wants the goose that lays golden eggs. CRA/LA's estimate of this land's value went from about $20M (2015) to $50M (2021), but that number was prepared for a market-rate deal that never happened. A value with affordable-housing restrictions would likely be far lower.</p>
+      <div class="meta" style="margin:8px 0 12px"><span class="chip" data-s="estimated">Estimate</span><a href="${U.wAL[1]}" target="_blank" rel="noopener">${esc(U.wAL[0])}</a></div>`);
+  }
+}
+
+/* ============================ CAMERA & INPUT ============================ */
+const cam = { yaw:.62, pitch:.5, dist:84, yawT:.62, pitchT:.5, distT:84, tx:0, ty:0, tz:-2, txT:0, tyT:0, tzT:-2 };
+function resetView(first){
+  cam.yawT = .62; cam.pitchT = .5; cam.distT = innerWidth < 700 ? 120 : 84; cam.txT = 0; cam.tyT = 0; cam.tzT = -2; selIdx = -1;
+  if(first) Object.assign(cam, {yaw:cam.yawT, pitch:cam.pitchT, dist:cam.distT, tx:0, ty:0, tz:-2});
+}
+function focusOn(x,y,z,dist,pitch,yawNudge){ cam.txT = x; cam.tyT = y; cam.tzT = z; cam.distT = dist; if(pitch!==undefined) cam.pitchT = pitch; if(yawNudge) cam.yawT += yawNudge; }
+$("btnReset").onclick = ()=>{ closeCard(); $("egg").hidden = true; resetView(); };
+selectFlock = i => {
+  selIdx = i; labelEls.forEach((el,j)=>el.classList.toggle("sel", j===i));
+  const f = FLOCKS[i]; focusOn(f.center.x, 0, f.center.z, 21, .4);
+  openCard(i);
+};
+
+let quality = "high";
+function setQuality(q){
+  quality = q; const high = q === "high";
+  renderer.setPixelRatio(high ? Math.min(1.5, devicePixelRatio||1) : 1);
+  renderer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
+  renderer.shadowMap.enabled = high; sun.castShadow = high;
+  scene.traverse(o=>{ if(o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate = true); });
+  const b = $("btnQuality"); b.textContent = high ? "Quality: high" : "Quality: fast"; b.setAttribute("aria-pressed", String(!high));
+}
+$("btnQuality").onclick = ()=>{ if(renderer) setQuality(quality==="high" ? "low" : "high"); };
+
+const keys = {}, ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+let hoverFlock = -1, hoverEgg = false, lastMove = null;
+function pick(cx, cy){
+  const r = renderer.domElement.getBoundingClientRect(); ndc.set((cx-r.left)/r.width*2-1, -(cy-r.top)/r.height*2+1);
+  ray.setFromCamera(ndc, camera);
+  const targets = []; Object.keys(VM).forEach(k=>{ if(k!=="hen"){ targets.push(VM[k].meshes[0], VM[k].meshes[1]); } });
+  const hits = ray.intersectObjects(targets.concat(clickables), false);
+  for(const h of hits){
+    if(h.object.userData.egg) return { egg:h.object.userData.egg };
+    if(h.instanceId !== undefined){ const g = VM[h.object.userData.variant].owners[h.instanceId]; if(g) return { flock:g.flock }; }
+  }
+  return null;
+}
+function bindInput(){
+  const el = renderer.domElement, ptrs = new Map(); let drag = 0, pinch0 = 0, d0 = 0, pan = false;
+  el.addEventListener("contextmenu", e=>e.preventDefault());
+  el.addEventListener("pointerdown", e=>{ el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); drag = 0; pan = e.shiftKey || e.button === 1;
+    if(ptrs.size===2){ const [a,b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x-b.x,a.y-b.y); d0 = cam.distT; } });
+  el.addEventListener("pointermove", e=>{
+    lastMove = {x:e.clientX, y:e.clientY};
+    const p = ptrs.get(e.pointerId); if(!p) return;
+    const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    if(ptrs.size===1){ drag += Math.abs(dx)+Math.abs(dy); if(drag < 5) return;
+      if(pan){ const k = cam.dist*.0016, c = Math.cos(cam.yaw), s = Math.sin(cam.yaw);
+        cam.txT += (-c*dx - s*dy)*k; cam.tzT += (s*dx - c*dy)*k; }
+      else { cam.yawT -= dx*.005; cam.pitchT = Math.max(.12, Math.min(1.35, cam.pitchT + dy*.004)); } }
+    else if(ptrs.size===2){ const [a,b] = [...ptrs.values()], d = Math.hypot(a.x-b.x,a.y-b.y); if(pinch0) cam.distT = Math.max(10, Math.min(150, d0*pinch0/d)); drag = 99; }
+  });
+  el.addEventListener("pointerup", e=>{ const p = ptrs.get(e.pointerId); ptrs.delete(e.pointerId);
+    if(!p || drag >= 5 || ptrs.size || e.button !== 0) return;
+    const hit = pick(e.clientX, e.clientY);
+    if(hit && hit.flock !== undefined) selectFlock(hit.flock);
+    else if(hit && hit.egg) triggerEgg(hit.egg);
+  });
+  el.addEventListener("pointercancel", e=>ptrs.delete(e.pointerId));
+  el.addEventListener("pointerleave", ()=>{ lastMove = null; });
+  el.addEventListener("wheel", e=>{ e.preventDefault(); cam.distT = Math.max(10, Math.min(150, cam.distT*(1 + e.deltaY*.0011))); }, {passive:false});
+  addEventListener("keydown", e=>{
+    const k = e.key.toLowerCase();
+    if(["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].includes(k) && !e.target.closest("a,button")){ keys[k] = true; e.preventDefault(); }
+    if(k==="escape"){ if(!$("done").hidden) $("done").hidden = true; else if(!$("egg").hidden) $("eggClose").click(); else if(!$("card").hidden) closeCard(); else toggleGuide(false); }
+  });
+  addEventListener("keyup", e=>{ keys[e.key.toLowerCase()] = false; });
+}
+
+/* ============================ ANIMATION ============================ */
+const mB = new THREE.Matrix4(), mX = new THREE.Matrix4(), mY = new THREE.Matrix4(), mOut = new THREE.Matrix4();
+const qv = new THREE.Quaternion(), ev = new THREE.Euler(), pv = new THREE.Vector3(), one = new THREE.Vector3(1,1,1), sv = new THREE.Vector3();
+function writeAnimal(g, vm){
+  ev.set(g.pitch||0, g.yaw, g.roll||0, "YXZ"); qv.setFromEuler(ev); pv.set(g.x, g.y, g.z); mB.compose(pv, qv, one);
+  const [nx,ny,nz] = vm.geo.neck;
+  mOut.copy(mB).multiply(mX.makeTranslation(nx,ny,nz)).multiply(mY.makeRotationFromEuler(ev.set(g.hp, g.hy, 0, "YXZ")));
+  vm.meshes[1].setMatrixAt(g.iid, mOut);
+  vm.meshes[0].setMatrixAt(g.iid, mB);
+  const [wx,wy,wz] = vm.geo.wing, sweep = 1.45 - g.spread*1.25;
+  [1,-1].forEach((d,k)=>{
+    mOut.copy(mB).multiply(mX.makeTranslation(d*wx,wy,wz)).multiply(mY.makeRotationY(d*sweep)).multiply(mX.makeRotationZ(d*(g.flap + (1-g.spread)*-.08)));
+    vm.meshes[2+k].setMatrixAt(g.iid, mOut);
+  });
+}
+function lerpAngle(a, b, t){ let d = b - a; d = Math.atan2(Math.sin(d), Math.cos(d)); return a + d*t; }
+
+function tick(dt, t){
+  const slow = reduceMotion ? .35 : 1;
+  // ---- light transition
+  const k = Math.min(1, dt*1.4);
+  LS.dir.lerp(LT.dir, k).normalize(); LS.sun.lerp(LT.sun, k); LS.zen.lerp(LT.zen, k); LS.hor.lerp(LT.hor, k); LS.hs.lerp(LT.hs, k); LS.hg.lerp(LT.hg, k);
+  LS.int += (LT.int - LS.int)*k; LS.hi += (LT.hi - LS.hi)*k;
+  sun.color.copy(LS.sun).convertSRGBToLinear(); sun.intensity = LS.int;
+  hemi.color.copy(LS.hs).convertSRGBToLinear(); hemi.groundColor.copy(LS.hg).convertSRGBToLinear(); hemi.intensity = LS.hi;
+  sun.position.set(cam.tx + LS.dir.x*110, LS.dir.y*110, cam.tz + LS.dir.z*110); sun.target.position.set(cam.tx, 0, cam.tz);
+  const su = sky.material.uniforms; su.uZen.value.copy(LS.zen); su.uHor.value.copy(LS.hor); su.uSun.value.copy(LS.dir); su.uSunC.value.copy(LS.sun);
+  scene.fog.color.copy(LS.hor).convertSRGBToLinear();
+  const wu = water.material.uniforms; wu.uT.value = t; wu.uSun.value.copy(LS.dir); wu.uSunC.value.copy(LS.sun); wu.uSky.value.copy(LS.hor).lerp(LS.zen,.35); wu.uCam.value.copy(camera.position);
+
+  // ---- flocks
+  let ri = 0; const rip = wu.uRip.value;
+  FLOCKS.forEach((f,fi)=>{
+    const sel = fi === selIdx;
+    f.t += dt*(sel ? .25 : 1)*slow;
+    const u = f.t*f.w*6.283;
+    const nx = f.anchor.x + 3.4*Math.sin(u), nz = f.anchor.z + 2.2*Math.sin(2*u);
+    const hx = nx - f.center.x, hz = nz - f.center.z; if(Math.hypot(hx,hz) > 1e-4) f.heading = lerpAngle(f.heading, Math.atan2(hx,hz), Math.min(1, dt*2));
+    f.center.x = nx; f.center.z = nz;
+    // Canada geese take off now and then
+    if(f.id === "canada"){
+      f.mt += dt*slow;
+      if(f.mode==="swim" && f.mt > f.nextFly && !sel){ f.mode = "up"; f.mt = 0; f.fa = Math.atan2(f.center.z, f.center.x); }
+      else if(f.mode==="up" && f.mt > 3.2){ f.mode = "fly"; f.mt = 0; }
+      else if(f.mode==="fly" && f.mt > 17){ f.mode = "down"; f.mt = 0; }
+      else if(f.mode==="down" && f.mt > 4){ f.mode = "swim"; f.mt = 0; f.nextFly = 40 + hash(t,1)*25; }
+      if(sel && f.mode==="fly"){ f.mode = "down"; f.mt = 0; }
+    }
+    const airborne = f.mode !== "swim";
+    const c = Math.cos(f.heading), s = Math.sin(f.heading);
+    let lead = null;
+    f.members.forEach((g,gi)=>{
+      let tx, tz, ty = 0;
+      if(g.gosling && lead){ const bx = lead.x - Math.sin(lead.yaw)*1.0, bz = lead.z - Math.cos(lead.yaw)*1.0; tx = bx; tz = bz; }
+      else { tx = f.center.x + g.off.x*c + g.off.z*s + Math.sin(t*.6 + g.ph)*.35; tz = f.center.z - g.off.x*s + g.off.z*c + Math.cos(t*.5 + g.ph)*.35; }
+      if(airborne){
+        f.fa += dt*.2/f.members.length;
+        const rank = Math.ceil(gi/2), side = gi%2 ? 1 : -1, R = 36;
+        const ang = f.fa - rank*.035, rr = R + rank*1.1*side;
+        const fxp = Math.cos(ang)*rr, fzp = Math.sin(ang)*rr*.8, fh = 11 + rank*.3;
+        const blend = f.mode==="up" ? sm(0,3.2,f.mt) : f.mode==="down" ? 1 - sm(0,4,f.mt) : 1;
+        tx = tx + (fxp - tx)*blend; tz = tz + (fzp - tz)*blend; ty = fh*blend;
+        g.spread += (1 - g.spread)*Math.min(1, dt*4);
+        g.flap = Math.sin(t*9 + g.ph)*.7*g.spread;
+      } else { g.spread += (0 - g.spread)*Math.min(1, dt*4); g.flap = Math.sin(t*1.5 + g.ph)*.03; }
+      const dx = tx - g.x, dz = tz - g.z, d = Math.hypot(dx,dz);
+      const sp = Math.min(d*1.3, airborne ? 12 : (g.gosling ? 1.6 : 1.1))*slow;
+      if(d > .02){ g.x += dx/d*sp*dt; g.z += dz/d*sp*dt; g.yaw = lerpAngle(g.yaw, Math.atan2(dx,dz), Math.min(1, dt*(airborne?3:2.2))); }
+      g.y += (ty - g.y)*Math.min(1, dt*(airborne ? 2 : 3));
+      const bob = airborne ? 0 : Math.sin(t*2.2 + g.ph)*.025;
+      const yy = g.y + bob;
+      g.pitch = airborne ? -.15 : 0;
+      // dabbling: tip the head into the water now and then
+      g.dabT -= dt; if(g.dabT < 0 && !airborne){ g.dab = 1.4; g.dabT = 6 + hash(g.ph, t)*12; }
+      g.dab = Math.max(0, g.dab - dt);
+      const dip = g.dab > 0 ? Math.sin(Math.min(1, (1.4 - g.dab)/1.4)*Math.PI) : 0;
+      g.hp = dip*1.25 + (airborne ? .5 : Math.sin(t*1.3 + g.ph)*.06); g.hy = airborne ? 0 : Math.sin(t*.7 + g.ph*2)*.35*(1-dip);
+      const save = g.y; g.y = yy; writeAnimal(g, VM[g.key]); g.y = save;
+      if(ri < MAXR - 1){ rip[ri].set(g.x, g.z, airborne ? (g.y < .6 ? .8 : 0) : (g.gosling ? .5 : 1), g.ph); ri++; }
+      if(!g.gosling) lead = lead || g;
+    });
+  });
+  // ---- hens peck around the yard
+  hens.forEach(h=>{
+    h.wait -= dt;
+    if(h.wait < 0){ if(Math.hypot(h.tx-h.x,h.tz-h.z) < .1){ h.tx = -21 + hash(h.ph,t)*4.2; h.tz = -35.5 + hash(t,h.ph)*8; h.wait = 1 + hash(h.x,t)*3; } }
+    const dx = h.tx - h.x, dz = h.tz - h.z, d = Math.hypot(dx,dz), walking = d > .1 && h.wait < 0;
+    if(walking){ h.x += dx/d*Math.min(d,.9)*dt*slow; h.z += dz/d*Math.min(d,.9)*dt*slow; h.yaw = lerpAngle(h.yaw, Math.atan2(dx,dz), Math.min(1,dt*5)); }
+    h.y = heightAt(h.x,h.z) + .22*h.s + (walking ? Math.abs(Math.sin(t*10+h.ph))*.04 : 0);
+    h.hp = walking ? Math.sin(t*10 + h.ph)*.15 : Math.max(0, Math.sin(t*3 + h.ph))*1.1;
+    h.hy = 0; writeAnimal(h, VM.hen);
+  });
+  Object.keys(VM).forEach(k=>VM[k].meshes.forEach(m=>m.instanceMatrix.needsUpdate = true));
+
+  // ---- koi, and the occasional jump
+  const md = new THREE.Matrix4();
+  if(splash.s > 0) splash.s = Math.max(0, splash.s - dt*.45);
+  fish.forEach((f,i)=>{
+    f.a += f.w*dt*slow;
+    let x = f.cx + Math.cos(f.a)*f.r, z = f.cz + Math.sin(f.a)*f.r*.7, y = f.d;
+    let yaw = Math.atan2(-Math.sin(f.a)*f.w, Math.cos(f.a)*f.w*.7) + Math.sin(t*6 + f.ph)*.18, pitch = 0;
+    if(f.jump >= 0){ f.jump += dt; const jt = f.jump/1.1; y = -.3 + Math.sin(jt*Math.PI)*1.3; pitch = (jt - .5)*2.2;
+      if(f.jump > 1.1){ f.jump = -1; splash = {x, z, s:1, w:t}; } }
+    else if(!reduceMotion && hash(i, Math.floor(t*.5)) > .9993) { f.jump = 0; splash = {x, z, s:1, w:t}; }
+    ev.set(pitch, yaw, 0, "YXZ"); qv.setFromEuler(ev); pv.set(x,y,z); md.compose(pv, qv, one); fishMesh.setMatrixAt(i, md);
+  });
+  fishMesh.instanceMatrix.needsUpdate = true;
+  rip[ri].set(splash.x, splash.z, splash.s*1.6, splash.w); ri++;
+  for(; ri<MAXR; ri++) rip[ri].z = 0;
+
+  // ---- songbirds
+  birds.forEach((b,i)=>{
+    b.a += b.w*dt*slow;
+    const x = b.cx + Math.cos(b.a)*b.r, z = b.cz + Math.sin(b.a)*b.r*.75, y = b.h + Math.sin(t*.8 + b.ph)*1.5;
+    const yaw = Math.atan2(-Math.sin(b.a)*b.w, Math.cos(b.a)*b.w*.75);
+    ev.set(0, yaw, -Math.sign(b.w)*.25, "YXZ"); qv.setFromEuler(ev); pv.set(x,y,z); mB.compose(pv, qv, one);
+    birdMeshes[0].setMatrixAt(i, mB);
+    const fl = Math.sin(t*14 + b.ph)*.8;
+    birdMeshes[1].setMatrixAt(i, mOut.copy(mB).multiply(mX.makeRotationZ(fl)));
+    birdMeshes[2].setMatrixAt(i, mOut.copy(mB).multiply(mX.makeRotationZ(-fl)));
+  });
+  birdMeshes.forEach(m=>m.instanceMatrix.needsUpdate = true);
+  // ---- butterflies
+  flies.forEach((b,i)=>{
+    const a = t*.6*slow + b.ph, x = b.cx + Math.cos(a)*b.r + Math.sin(a*2.3)*.4, z = b.cz + Math.sin(a*1.3)*b.r, y = heightAt(x,z) + .8 + Math.sin(a*3)*.35;
+    ev.set(0, a*1.3, 0, "YXZ"); qv.setFromEuler(ev); pv.set(x,y,z); sv.set(.35 + Math.abs(Math.sin(t*16 + b.ph))*.65, 1, 1); md.compose(pv, qv, sv); flyMesh.setMatrixAt(i, md);
+  });
+  flyMesh.instanceMatrix.needsUpdate = true;
+  // ---- scenery motion
+  windmillBlades.rotation.z -= dt*.7*slow;
+  clouds.forEach(c=>{ c.position.x += c.userData.v*dt; if(c.position.x > 200) c.position.x = -200; });
+  if(funDir){ funT = Math.max(0, Math.min(1, funT + funDir*dt/6)); if(funT===0 || funT===1) funDir = 0; }
+  funicular.position.lerpVectors(funRail.a, funRail.b, sm(0,1,funT)); funicular.position.y += .12;
+  if(goldenEgg.userData.spin){ goldenEgg.rotation.y += dt*8; goldenEgg.userData.spin = Math.max(0, goldenEgg.userData.spin - dt); }
+  goldenEgg.position.y = heightAt(goldenEgg.position.x, goldenEgg.position.z) + .3 + Math.sin(t*2)*.02;
+
+  // ---- camera
+  const px = (keys.d||keys.arrowright?1:0) - (keys.a||keys.arrowleft?1:0), pz = (keys.s||keys.arrowdown?1:0) - (keys.w||keys.arrowup?1:0);
+  if(px || pz){ const kk = cam.dist*.9*dt, c2 = Math.cos(cam.yaw), s2 = Math.sin(cam.yaw); cam.txT += (c2*px + s2*pz)*kk; cam.tzT += (-s2*px + c2*pz)*kk; }
+  if(selIdx >= 0){ const f = FLOCKS[selIdx], air = f.mode !== "swim"; cam.txT = f.center.x; cam.tzT = f.center.z; if(air){ const g = f.members[0]; cam.txT = g.x; cam.tzT = g.z; cam.tyT = g.y*.8; } else cam.tyT = 0;
+    // keep the flock clear of the record card on wide screens: shift the view so it sits right of centre
+    if(innerWidth > 700 && !$("card").hidden){ const off = cam.dist*.2; cam.txT -= Math.cos(cam.yaw)*off; cam.tzT += Math.sin(cam.yaw)*off; } }
+  cam.txT = Math.max(-80, Math.min(80, cam.txT)); cam.tzT = Math.max(-80, Math.min(80, cam.tzT));
+  const kc = Math.min(1, dt*4.5);
+  cam.yaw += (cam.yawT - cam.yaw)*kc; cam.pitch += (cam.pitchT - cam.pitch)*kc; cam.dist += (cam.distT - cam.dist)*kc;
+  cam.tx += (cam.txT - cam.tx)*kc; cam.ty += (cam.tyT - cam.ty)*kc; cam.tz += (cam.tzT - cam.tz)*kc;
+  camera.position.set(cam.tx + Math.sin(cam.yaw)*Math.cos(cam.pitch)*cam.dist, cam.ty + Math.sin(cam.pitch)*cam.dist, cam.tz + Math.cos(cam.yaw)*Math.cos(cam.pitch)*cam.dist);
+  camera.lookAt(cam.tx, cam.ty, cam.tz);
+  sky.position.copy(camera.position);
+
+  // ---- flock labels
+  const W = innerWidth, H = innerHeight;
+  FLOCKS.forEach((f,i)=>{
+    const air = f.mode !== "swim", g = f.members[0];
+    pv.set(air ? g.x : f.center.x, (air ? g.y : 0) + 2.6, air ? g.z : f.center.z).project(camera);
+    const el = labelEls[i];
+    if(pv.z > 1 || Math.abs(pv.x) > 1.1 || Math.abs(pv.y) > 1.1){ el.style.visibility = "hidden"; return; }
+    el.style.visibility = "visible";
+    el.style.transform = `translate(${(pv.x*.5+.5)*W}px, ${(-pv.y*.5+.5)*H}px) translate(-50%,-100%)`;
+    el.classList.toggle("hot", i === hoverFlock);
+  });
+  // ---- hover (throttled)
+  if(lastMove && (Math.floor(t*20) % 2 === 0)){
+    const h = pick(lastMove.x, lastMove.y);
+    hoverFlock = h && h.flock !== undefined ? h.flock : -1; hoverEgg = !!(h && h.egg);
+    renderer.domElement.classList.toggle("hover", hoverFlock >= 0 || hoverEgg);
+  }
+}
+
+Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r=>setTimeout(r,1500))]).then(start);
+</script>
+
+</body>
+</html>
